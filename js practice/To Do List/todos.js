@@ -25,7 +25,6 @@ const appendTodos = (text) => {
 };
 
 const deleteTodo = (todoId) => {
-  console.log(todoId);
   const newTodos = getAllTodos().filter((todo) => todo.id !== todoId);
   setTodos(newTodos);
   paintTodos();
@@ -37,6 +36,41 @@ const completeTodo = (todoId) => {
   );
   setTodos(newTodos);
   paintTodos();
+};
+
+const updateTodo = (text, todoId) => {
+  const currentTodos = getAllTodos();
+  const newTodos = currentTodos.map((todo) =>
+    todo.id === todoId ? { ...todo, content: text } : todo
+  );
+  setTodos(newTodos);
+  paintTodos();
+};
+
+const onDbclickTodo = (e, todoId) => {
+  const todoElem = e.target;
+  const inputText = e.target.innerText;
+  const todoItemElem = todoElem.parentNode;
+  const inputElem = document.createElement("input");
+  inputElem.value = inputText;
+  inputElem.classList.add("edit-input");
+  todoItemElem.appendChild(inputElem);
+
+  inputElem.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      updateTodo(e.target.value, todoId);
+      document.body.removeEventListener("click", onClickBody);
+    }
+  });
+
+  const onClickBody = (e) => {
+    if (e.target !== inputElem) {
+      todoItemElem.removeChild(inputElem);
+      document.body.removeEventListener("click", onClickBody);
+    }
+  };
+
+  document.body.addEventListener("click", onClickBody);
 };
 
 const paintTodos = () => {
@@ -55,6 +89,9 @@ const paintTodos = () => {
 
     const todoElem = document.createElement("div");
     todoElem.classList.add("todo");
+    todoElem.addEventListener("dblclick", (event) =>
+      onDbclickTodo(event, todo.id)
+    );
     todoElem.innerText = todo.content;
 
     const delBtnElem = document.createElement("button");
