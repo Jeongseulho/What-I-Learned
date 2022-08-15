@@ -1,18 +1,8 @@
 const todoInputElem = document.querySelector(".todo-input");
+const todoListElem = document.querySelector(".todo-list");
 
 let todos = [];
 let id = 0;
-
-const init = () => {
-  todoInputElem.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-      appendTodos(todoInputElem.value);
-      todoInputElem.value = "";
-    }
-  });
-};
-
-init();
 
 const setTodos = (newTodos) => {
   todos = newTodos;
@@ -29,26 +19,39 @@ const appendTodos = (text) => {
     isCompleted: false,
     content: text,
   });
-  // 스프레드 연산자 사용할 경우
   // const newTodos = [...getAllTodos(), {id: newId, isCompleted: false, content: text }]
   setTodos(newTodos);
   paintTodos();
 };
 
-const todoListElem = document.querySelector(".todo-list");
+const deleteTodo = (todoId) => {
+  console.log(todoId);
+  const newTodos = getAllTodos().filter((todo) => todo.id !== todoId);
+  setTodos(newTodos);
+  paintTodos();
+};
+
+const completeTodo = (todoId) => {
+  const newTodos = getAllTodos().map((todo) =>
+    todo.id === todoId ? { ...todo, isCompleted: !todo.isCompleted } : todo
+  );
+  setTodos(newTodos);
+  paintTodos();
+};
 
 const paintTodos = () => {
   todoListElem.innerHTML = null; //todoListElem 요소 안의 HTML 초기화
   const allTodos = getAllTodos(); // todos 배열 가져오기
 
-  // "todo-item"에 해당하는 HTML을 그려서 "todo-list"에 추가하기
   allTodos.forEach((todo) => {
     const todoItemElem = document.createElement("li");
     todoItemElem.classList.add("todo-item");
 
-    // todoItemElem.setAttribute('data-id', todo.id );
+    todoItemElem.setAttribute("data-id", todo.id);
+
     const checkboxElem = document.createElement("div");
     checkboxElem.classList.add("checkbox");
+    checkboxElem.addEventListener("click", () => completeTodo(todo.id));
 
     const todoElem = document.createElement("div");
     todoElem.classList.add("todo");
@@ -56,6 +59,7 @@ const paintTodos = () => {
 
     const delBtnElem = document.createElement("button");
     delBtnElem.classList.add("delBtn");
+    delBtnElem.addEventListener("click", () => deleteTodo(todo.id));
     delBtnElem.innerHTML = "X";
 
     if (todo.isCompleted) {
@@ -70,3 +74,14 @@ const paintTodos = () => {
     todoListElem.appendChild(todoItemElem);
   });
 };
+
+const init = () => {
+  todoInputElem.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      appendTodos(e.target.value);
+      todoInputElem.value = "";
+    }
+  });
+};
+
+init();
