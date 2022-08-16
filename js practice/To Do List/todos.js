@@ -63,14 +63,14 @@ const onDbclickTodo = (e, todoId) => {
     }
   });
 
+  document.body.addEventListener("click", onClickBody);
+
   const onClickBody = (e) => {
     if (e.target !== inputElem) {
       todoItemElem.removeChild(inputElem);
       document.body.removeEventListener("click", onClickBody);
     }
   };
-
-  document.body.addEventListener("click", onClickBody);
 };
 
 const paintTodos = () => {
