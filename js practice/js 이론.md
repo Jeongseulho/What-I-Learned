@@ -7,6 +7,8 @@
   - [클로저](#클로저)
     - [클로저의 활용들](#클로저의-활용들)
   - [스케줄링](#스케줄링)
+    - [setTimeout()으로 setInterval()구현하기](#settimeout으로-setinterval구현하기)
+    - [setTimdout()활용들](#settimdout활용들)
 
 ## 콜 스택
 
@@ -130,8 +132,8 @@ function secret (secretCode) {
   // 'CSS Tricks is amazing'
 ```
 
-`saySecretCode`는 유일하게 기존 `secret()` 함수 밖에서 `secretCode`를 노출하는 함수  
-<br>
+- `saySecretCode`는 유일하게 기존 `secret()` 함수 밖에서 `secretCode`를 노출하는 함수  
+  <br>
 
 현재 상태 기억, 변경 상태 유지
 
@@ -162,3 +164,147 @@ function secret (secretCode) {
    <br>
 
 ## 스케줄링
+
+- `setTimeout()`
+
+```java script
+let timerId = setTimeout(func|code, [delay], [arg1], [arg2], ...);
+```
+
+```java script
+function sayHi(phrase, who) {
+  alert( phrase + ', ' + who);
+}
+
+setTimeout(sayHi, 1000, "Hello", "John"); // 1초후 Hello, John 출력
+// clearTimeout(timerId); 예약 취소시 사용
+```
+
+<br>
+
+- `setInterval()`
+
+```java script
+let timerId = setInterval(func|code, [delay], [arg1], [arg2], ...);
+```
+
+```java script
+// 2초마다 반복
+let timerId = setInterval(() => alert('tick'), 2000);
+
+// 5초 후에 정지
+setTimeout(() => { clearInterval(timerId); alert('stop'); }, 5000);
+```
+
+<br>
+
+### setTimeout()으로 setInterval()구현하기
+
+- 재귀적 `setTimeout()`
+
+```java script
+  const myInterval = () => {
+    setTimeout(() => {
+      console.log('실행됨')
+      myInterval()
+    }, 1000)
+  }
+  myInterval();
+```
+
+- 재귀적 `setInterval()` vs `setTimeout()`
+
+```java script
+let i = 1;
+setInterval(function () {
+  func(i);
+}, 100);
+```
+
+![17](https://user-images.githubusercontent.com/110578739/185303169-c53b3c1c-db9b-47fd-bcc9-aa50612825e5.png)
+
+- `setInterval()`에서 호출 사이 딜레이는 실제 100ms 보다 작다  
+  <br>
+
+```java script
+let i = 1;
+setTimeout(function run() {
+  func(i);
+  setTimeout(run, 100);
+}, 100);
+```
+
+![18](https://user-images.githubusercontent.com/110578739/185303174-ac2bbca4-226e-4e4f-b3a6-20f002a235f9.png)
+
+- 새로운 호출이 이전 호출의 끝에서 계획되기 때문에 `setTimeout()`에서 딜레이는 100ms로 고정된다  
+  <br>
+
+### setTimdout()활용들
+
+<br>
+
+- `setTimeout(fnc,0)` 또는 `setTimeout(fnc)`
+
+```java script
+setTimeout(() => alert("World"));
+
+alert("Hello"); // Hello 먼저 출력 후 World 출력
+```
+
+현재코드가 끝난이후 바로 호출하고 싶을때 사용한다
+
+<br>
+
+- split하기
+
+```java script
+let i = 0;
+let start = Date.now();
+
+function count() { // 1e9까지 ++하는 함수
+
+  if ( i < 1e9 - 1e6) { // i가 이구간까지 계속 스케줄링
+    setTimeout(count);
+  }
+
+  do {
+    i++;
+  } while (i % 1e6 != 0); // ie6 배수마다 빠져나와서
+
+  if ( i == 1e9) { // 완료되었는지 확인한다
+    alert("Done in " + (Date.now() - start) + 'ms');
+  }
+  // 이후 스케줄링 되어있던 count()를 다시 실행한다
+}
+
+count();
+```
+
+이렇게 하면 1e9 까지 카운트하는 큰 작업중에 사용자가 웹과 상호작용할 수 있는 시간을 준다  
+<br>
+
+- 렌더링으로 진행 상황 알려주기
+
+```html
+<div id="progress"></div>
+
+<script>
+  let i = 0;
+
+  function count() {
+    // do a piece of the heavy job (*)
+    do {
+      i++;
+      progress.innerHTML = i;
+    } while (i % 1e3 != 0);
+
+    if (i < 1e9) {
+      setTimeout(count);
+    }
+  }
+
+  count();
+</script>
+```
+
+다음과 같이 진행상황을 innerHTML로 알려줄 수 있다.
