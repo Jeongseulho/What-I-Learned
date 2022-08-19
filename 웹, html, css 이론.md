@@ -1,8 +1,15 @@
 # 목차
 
 - [목차](#목차)
+- [웹](#웹)
   - [웹 브라우저 구조](#웹-브라우저-구조)
+- [html](#html)
   - [async와 defer](#async와-defer)
+- [css](#css)
+
+<br>
+
+# 웹
 
 ## 웹 브라우저 구조
 
@@ -38,6 +45,8 @@
   데이터를 정장하는 계층으로 쿠키와 같은 모든 종류의 데이터를 저장
   LocalStorage, IndexedDB, WebSQL 및 FileSysyem과 같은 저장소 메커니즘 지원  
   <br>
+
+# html
 
 ## async와 defer
 
@@ -87,3 +96,5 @@ _head태그 내부에 defer 사용_
 
 ![16](https://user-images.githubusercontent.com/110578739/185296302-4eea0d0a-e969-413b-a11d-f02fa1a80325.png)  
 <br>
+
+# css
