@@ -6,8 +6,11 @@
 - [html](#html)
   - [async와 defer](#async와-defer)
 - [css](#css)
-
-<br>
+  - [text-align사용법](#text-align사용법)
+  - [input:focus에서 outline변경](#inputfocus에서-outline변경)
+  - [class 선택자 주의점](#class-선택자-주의점)
+  - [float 속성](#float-속성)
+    <br>
 
 # 웹
 
@@ -98,3 +101,28 @@ _head태그 내부에 defer 사용_
 <br>
 
 # css
+
+## text-align사용법
+
+- `text-align`은 inline요소를 수평측에서 특정 위치로 정렬할 때 사용한다
+- `text-align`은 부모 block요소에 적용해주어야한다(그럼 자식 inline요소들이 정렬된다)
+- inline요소에 직접 적용해야할때는 `display : inline-block` 사용
+- 주의해야 할 점은 block요소 내부에 쓰여진 text자체는 inline요소이다, 부모 block요소에 `text-aling: center`을 사용하면 자식 block요소 내부의 text들이 각자 본인들의 block크기 안에서 가운데 정렬된다  
+  <br>
+
+## input:focus에서 outline변경
+
+- `input:focus`에서 outline의 `border-radius`스타일이 적용되지 않는다
+- `outline: none`하고 `border` 또는 `box-shadow` 쓰기  
+  <br>
+
+## class 선택자 주의점
+
+- `.class1.class2` : 두 클래스를 모두 갖는 요소 선택
+- `.class1 .class2` : `class1` 가진 요소의 자손 중 `class2` 갖는 모든 요소 선택  
+  <br>
+
+## float 속성
+
+- `float:left` 또는 `float:right`는 문서 기본 흐름에서 벗어나 왼쪽 또는 오른쪽에 부유하도록 하는 것
+- `float` 사용시 `display:inline-block`을 한것과 동일한 효과도 부여된다
