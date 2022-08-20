@@ -9,6 +9,14 @@
   - [스케줄링](#스케줄링)
     - [setTimeout()으로 setInterval()구현하기](#settimeout으로-setinterval구현하기)
     - [setTimdout()활용들](#settimdout활용들)
+  - [DOM](#dom)
+  - [BOM](#bom)
+  - [this](#this)
+  - [화살표 함수 쓰면안되는 경우](#화살표-함수-쓰면안되는-경우)
+  - [call, apply, bind](#call-apply-bind)
+  - [이벤트 전파](#이벤트-전파)
+  - [모듈 시스템](#모듈-시스템)
+  - [NPM](#npm)
 
 ## 콜 스택
 
@@ -307,4 +315,334 @@ count();
 </script>
 ```
 
-다음과 같이 진행상황을 innerHTML로 알려줄 수 있다.
+다음과 같이 진행상황을 innerHTML로 알려줄 수 있다  
+<br>
+
+## DOM
+
+- DOM(Document object Model) : java script로 웹문서를 제어하기 위해 웹문서를 객체화 한것
+
+<img width="524" alt="22" src="https://user-images.githubusercontent.com/110578739/185735313-c5a7da74-c85b-4bfd-b73f-51b61b5f7433.png">
+
+- DOM은 다음과 같은 트리구조를 하고있다
+- 최상위 노드인 `document`의 여러 메소드들을 사용하여 제어가능  
+  <br>
+
+## BOM
+
+- BOM(Browser Object Model) : java script로 브라우저를 제어하기 위해 브라우저를 객체화 한것
+- DOM과 마찬가지 여러 내장 메소드들을 사용하여 브라우저를 제어가능
+- 모든 객체가 소속된 객체인 `window`를 사용하여 제어가능
+- ex) `window.alert` (기존 `alert`은 원래 window를 생략하여 사용한것), `window.document` (DOM트리 최상위노드인 웹문서를 가르킨다)
+  <br>
+
+## this
+
+- `this`는 자신이 포함되어 있는 객체를 가르킨다, 호출방식에 따라 값이 달라진다 (deafult 로 `window`를 가르킨다)
+
+```java script
+function myFn () {
+  return this;
+}
+myFn(); // window 객체 출력
+```
+
+`this`는 객체를 가르키기 때문에 다음과 같이 호출시 가르킬 객체가 없어 기본값 `window`객체를 가르킨다  
+<br>
+
+```java script
+function MyFn() {
+  this.title = 'Hello World!';
+  return this;
+}
+// new 연산자를 이용해서 새로운 객체를 얻는다.
+const myfn = new MyFn();
+myfn // MyFn {title: 'Hello World!'}
+```
+
+단, `new`를 사용하여 객체를 만들면 해당 객체를 가르킨다  
+<br>
+
+```java script
+const fn = {
+  title: 'Hello World!',
+  showTitle() {
+    console.log(this.title);
+  }
+};
+fn.showTitle(); // 'Hello World!'
+```
+
+객체안의 함수인 메소드에서 `this`는 객체 fn을 참조한다  
+<br>
+
+```java script
+const fn = {
+  title: 'Hello World!',
+  tags: [1, 2, 3, 4],
+  showTags() {
+    this.tags.forEach(function(tag) {
+      console.log(tag);
+      console.log(this); // window
+    });
+  }
+}
+fn.showTags();
+// 1
+// window 객체 출력
+// 2
+// window 객체 출력
+// 3
+// window 객체 출력
+// 4
+// window 객체 출력
+```
+
+메소드에서 `this.tags`은 fn을 참조하지만, `console.log(this)`에서는 일반함수인 `forEach`문의 내부이므로 `window`를 가르킨다  
+단, 이경우
+
+```java script
+showTags() {
+    this.tags.forEach(function(tag) {
+      console.log(tag);
+      console.log(this); // fn
+    }, this); // 여기는 일반 함수 바깥, fn 객체를 참조할 수 있다.
+}
+```
+
+`forEach`문의 콜백함수 다음에 인자를 추가한다  
+이 인자는 `forEach`문내에서 `this`가 무엇을 참조하게 할건지 알려준다 (`forEach`문 바깥, fn객체내에서 `this`를 썼으므로 fn객체를 가르킨다)  
+<br>
+
+```java script
+const fn = {
+  title: 'Hello World!',
+  tags: [1, 2, 3, 4],
+  showTags() {
+    this.tags.forEach((tag) => {
+      console.log(tag);
+      console.log(this); // fn
+    });
+  }
+}
+fn.showTags();
+// 1
+// fn 객체 출력
+// 2
+// fn 객체 출력
+// 3
+// fn 객체 출력
+// 4
+// fn 객체 출력
+```
+
+화살표함수는 `this`에 바인딩할 객체가 정적으로 결정된다  
+상위 환경에서 `this`의 객체를 참조한다 (`call,apply,bind`를 사용할 수 없다)  
+<br>
+
+## 화살표 함수 쓰면안되는 경우
+
+- 화살표함수를 쓰는 가장 큰 이유는 위의 `this`의 바인딩 때문이다
+- 화살표 함수 쓰면 안되는 경우  
+  <br>
+
+1. 메소드
+
+```java script
+   const cat = {
+  name: 'meow',
+  callName: () => console.log(this);
+}
+
+cat.callName();	// window 객체
+```
+
+다음과 같이 화살표 함수는 `this`를 상위 환경에서 찾으므로 일반적은 메소드에서는 `window`객체를 가르킨다  
+<br>
+
+2. 생성자 함수
+
+```java script
+const Foo = () => {};
+const foo = new Foo()	// TypeError: Foo is not a constructor
+```
+
+<br>
+
+3. `addEventListener`의 콜백함수
+
+```java script
+const button = document.getElementById('myButton');
+
+button.addEventListener('click', () => {
+  console.log(this);	// Window
+  this.innerHTML = 'clicked';
+});
+
+button.addEventListener('click', function() {
+   console.log(this);	// button 엘리먼트
+   this.innerHTML = 'clicked';
+});
+```
+
+`addEventListener`의 콜백함수에서는 `this`에 해당 이벤트 리스너가 호출된 엘리먼트가 바인딩 되도록 정의  
+이처럼 이미 `this`의 값이 정해져있는 콜백함수의 경우, 화살표 함수를 사용하면 기존 바인딩 값이 사라지고 상위 스코프가 바인딩되기 때문에 의도했던대로 동작하지 않을 수 있다  
+물론 상위 스코프의 속성들을 쓰려고 의도한 경우라면 사용가능
+<br>
+
+## call, apply, bind
+
+- `call, apply, bind`는 `this`의 값을 정해주면서 함수를 실행 한다
+- `call, apply, bind`의 사용법은 다음과 같다
+
+```java script
+function foo(a, b, c) {
+  console.log(a + b + c);
+};
+
+foo(1, 2, 3); // 6
+
+foo.call(null, 1, 2, 3); // 6
+
+foo.apply(null, [1, 2, 3]); // 6
+
+const a = foo.bind(null, 1, 2, 3);
+a(); //6
+```
+
+여기서 `null` 자리는 `this`에 전달할 객체를 넣고 이후 함수에 전달할 인자를 넣으면 된다
+
+```java script
+let person1 = {
+    name: 'Jo'
+};
+
+let person2 = {
+    name: 'Kim',
+    study: function() {
+        console.log(this.name + '이/가 공부를 하고 있습니다.');
+    }
+};
+
+person2.study(); // Kim이/가 공부를 하고 있습니다.
+
+// call()
+person2.study.call(person1); // Jo이/가 공부를 하고 있습니다.
+
+person2.study.apply(person1); // Jo이/가 공부를 하고 있습니다.
+
+let student = person2.study.bind(person1);
+student(); // Jo이/가 공부를 하고 있습니다.
+```
+
+- `call, apply, bind`의 차이점만 구별하면
+  - call : 함수 인자를 쉼표로 구분해 받는다
+  - apply : 함수 인자를 배열로 받는다
+  - bind : call과 같지만 함수를 실행하지 않고 해당 함수를 반환만 한다  
+    <br>
+
+## 이벤트 전파
+
+- 하위태그와 상위태그에 모두 이벤트를 등록했을때 하위태그를 누르면? 원하는 하위태그뿐만 아니라 상위태그에도 이벤트가 시작된다 이를 이벤트 전파라고 한다
+- 이벤트 전파에는 2종류가 있다
+  ![23](https://user-images.githubusercontent.com/110578739/185742700-9f8849b2-fe1b-4456-96c8-df6564728ac4.jpg)
+  다음과 같이 하위태그로부터 시작해서 올라가면 Bubbling
+  상위 태그로부터 내려가면 Capturing
+  주로 쓰는 `addEventListener`는 default로 Bubbling이다  
+  <br>
+
+이벤트 전파 막기
+
+- `event.stopPropagation()`을 `addEventListener`의 콜백함수 안에 사용하면 해당 요소 까지만 이벤트가 시작하고 이후 전파를 막는다
+- `event.preventDefault()`를 마찬가지로 콜백함수 안에 사용하면 해당 요소의 이벤트가 동작하지 않는다 (a 태그에 사용하면 기본적인 링크 기능이 없어짐)  
+  <br>
+
+이벤트 위임 하기
+
+```java script
+  const items = document.querySelector('ul');
+
+  items.addEventListener('click', (event) => {
+    const item = event.target.classList[0];
+
+    if(item==='item'){
+      event.target.style.background = 'blue';
+    }
+  })
+```
+
+이렇게 classList에 item이 있는 경우에만 실행을 하게 할 수 있다  
+<br>
+
+## 모듈 시스템
+
+- `<script src="">`을 사용하여 js파일을 여러개 불러올때 각 js파일의 전역 스코프들은 서로 공유하기 때문에 문제가 생긴다 (변수명이 같으면 같은것으로 간주함)
+- 이런 문제를 해결하기 위해서 모듈 시스템을 사용
+- 다른 js파일들에 있는 코드들을 모듈화 하여 재사용 가능
+- 여기서는 ES Module에대해 정리  
+  <br>
+
+- `named export`
+
+```java script
+export let name1;
+export const name2;
+export var name3;
+export function name4 () {}
+```
+
+변수, 함수 선언 전에 `export`를 사용하기  
+<br>
+
+```java script
+const var1;
+let var2;
+var var3;
+export { var1, var2, var3 }
+```
+
+한번에 여러개 `export`하기  
+<br>
+
+- `default export` ( js파일에 1번만 사용가능 )
+
+```java script
+export default fnc;
+```
+
+변수, 함수 선언후 따로 `export`사용하기  
+<br>
+
+```java script
+export default {
+  fnc;
+  var1;
+  var2;
+}
+```
+
+마찬가지 한번에 여러개 내보내기  
+<br>
+
+- `import`
+
+```java script
+import var1 from "module-name"; // var1을 가져온다
+import * as name from "module-name"; // 모든걸 가져온다 name (별칭사용)
+// name.var1로 사용가능
+import { member1 , member2 } from "module-name";
+// member1, member2 가져온다
+```
+
+<br>
+
+- Module type
+
+```hmtl
+<script type="module" src="index.mjs">
+```
+
+`type=”module”`을 사용하면 자바스크립트 파일은 모듈로 동작하게 된다  
+ 해당 파일에서는 `import`와 `export`를 사용할 수 있는데, 파일마다 독립적인 스코프를 갖게 되고, 각각의 mjs 파일에 있는 `window` 객체는 서로 공유되지 않는다
+
+## NPM

@@ -3,6 +3,7 @@
 - [목차](#목차)
 - [웹](#웹)
   - [웹 브라우저 구조](#웹-브라우저-구조)
+  - [rest와 rest api](#rest와-rest-api)
 - [html](#html)
   - [async와 defer](#async와-defer)
 - [css](#css)
@@ -48,6 +49,30 @@
   데이터를 정장하는 계층으로 쿠키와 같은 모든 종류의 데이터를 저장
   LocalStorage, IndexedDB, WebSQL 및 FileSysyem과 같은 저장소 메커니즘 지원  
   <br>
+
+## rest와 rest api
+
+- REST(Representational State Transfer) : 자원을 이름으로 구분하여 해당 자원의 상태를 주고받는 모든 것
+- 구체적으로  
+  1.HTTP URI(Uniform Resource Identifier)를 통해 자원(Resource)을 명시  
+  2.HTTP Method(POST, GET, PUT, DELETE)를 통해  
+  3.해당 자원(URI)에 대한 CRUD Operation을 적용하는 것을 의미 (CRUD = Creat, Read, Update, Delete)
+- REST의 구성요소
+
+  1. 자원(Resource) : HTTP URL
+  2. 자원에 대한 행위 : HTTP Method
+  3. 자원에 대한 표현(Representations)  
+     <br>
+
+- REST API : REST의 원리를 따르는 API
+- RESTful API : REST의 원리를 따르면서 REST API의 설계규칙을 올바르게 지킨 API를 지칭하는 말
+  - RESTful API를 위한 설계 규칙
+    1. 소문자를 사용
+    2. 언더바( \_ ) 대신 하이픈( - )을 사용
+    3. 마지막에 슬래시 ( / ) 를 포함하지 않는다
+    4. 행위를 포함하지 않는다
+    5. 파일 확장자는 URL에 포함시키지 않는다
+    6. 자원에는 형용사, 동사가 아닌 명사를 사용하며, 컨트롤 자원을 의미하는 경우 예외적으로 동사를 사용
 
 # html
 
