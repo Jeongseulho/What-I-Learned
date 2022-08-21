@@ -19,6 +19,12 @@
   - [NPM](#npm)
   - [라이브러리와 프레임워크](#라이브러리와-프레임워크)
   - [웹팩](#웹팩)
+  - [promise와 async/await](#promise와-asyncawait)
+    - [promise의 기본](#promise의-기본)
+    - [promise 체이닝](#promise-체이닝)
+  - [async](#async)
+  - [await](#await)
+    - [async와 await의 활용 예시](#async와-await의-활용-예시)
 
 ## 콜 스택
 
@@ -645,7 +651,8 @@ import { member1 , member2 } from "module-name";
 ```
 
 `type=”module”`을 사용하면 자바스크립트 파일은 모듈로 동작하게 된다  
- 해당 파일에서는 `import`와 `export`를 사용할 수 있는데, 파일마다 독립적인 스코프를 갖게 되고, 각각의 mjs 파일에 있는 `window` 객체는 서로 공유되지 않는다
+ 해당 파일에서는 `import`와 `export`를 사용할 수 있는데, 파일마다 독립적인 스코프를 갖게 되고, 각각의 mjs 파일에 있는 `window` 객체는 서로 공유되지 않는다  
+ <br>
 
 ## NPM
 
@@ -669,7 +676,7 @@ import { member1 , member2 } from "module-name";
     개발 시 필요한 기능이 있을 경우 능동적으로 라이브러리를 호출하여 사용하거나 기존에 구성된 함수나 코드를 가져다 써야 한다
 
   - 프레임워크는 애플리케이션의 코드가 프레임워크에 의해 사용  
-     애플리케이션 코드는 프레임워크가 짜 놓은 틀에서 수동적으로 동작하기 때문에 제어의 흐름은 프레임워크가 가지고 있고 사용자가 그 안에 필요한 코드를 작성
+     애플리케이션 코드는 프레임워크가 짜 놓은 틀에서 수동적으로 동작하기 때문에 제어의 흐름은 프레임워크가 가지고 있고 사용자가 그 안에 필요한 코드를 작성  
     <br>
 
 ## 웹팩
@@ -686,3 +693,193 @@ import { member1 , member2 } from "module-name";
   3. Loader : 웹팩은 자바스크립트 밖에 읽지 못한다  
      그래서 HTML, CSS, Images, 폰트 등을 웹팩이 읽을 수 있게 변환해줘야 하는데, 이 역할을 하는 게 바로 로더
   4. Plugin : 로더가 파일(모듈)을 해석하고 변환하는 과정에 필요한다면, 플러그인은 결과물(번들)에 추가적인 처리를 하고싶을 때 필요하다
+
+<br>
+
+## promise와 async/await
+
+### promise의 기본
+
+```java script
+const promise1 = new Promise((resolve, reject) => {
+  resolve();
+});
+promise1
+  .then(() => { // resolve();호출 되어서 .then 메소드 실행
+    console.log("then!");
+  })
+  .catch(() => {
+    console.log("catch!"); // reject();호출 되면 .catch 메소드 실행
+  });
+```
+
+- `Promise()`는 생성자 함수이다
+- `new Promise`로 `promise`형태의 객체를 만든다
+- 이 생성자는 함수를 인자로 받는다, 그리고 이 함수 인자는 `reslove`와 `reject`라는 2개의 함수형 파라미터를 가진다  
+  <br>
+
+```java script
+function startAsync(age) {
+  return new Promise((resolve, reject) => {
+    if (age > 20) resolve(`${age} success`);
+    else reject(new Error(`${age} is not over 20`));
+  });
+}
+```
+
+- 다음과 같이 함수를 만들고 `return`값으로 `new Promise`를 사용할 수 있다
+- 또한, age>20 조건에서 `resolve()` 실행하고 해당 결과를 담아 보내고
+- else 조건에서 `reject()` 실행하고 에러 이유를 담아 보낸다  
+  **여기서 `reject()`안에는 `error`객체를 보내야한다**
+
+```java script
+setTimeout(() => {
+  const promise1 = startAsync(25);
+  promise1
+    .then((value) => {  // 25 success
+      console.log(value);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  const promise2 = startAsync(15);
+  promise2
+    .then((value) => {
+      console.log(value);
+    })
+    .catch((error) => {  // Error: 15 is not over 20
+      console.error(error);
+    });
+}, 1000);
+```
+
+- `resolve()`호출시 `then()`메소드를 실행한다 여기서 `then(result=>{...})`은 함수를 인자로받고 이 함수의 파라미터는 `resolve(result)`안에 담긴 결과이다
+- `reject()`호출시 `catch()`메소드를 실행, `catch(error_reason=>{...})`와 같이 함수를 인자로 받고 이 함수의 파라미터는 `new Error(error_reason)`객체에 담긴 에러 메세지이다
+
+```java script
+new Promise((resolve, reject) => {
+  setTimeout(() => resolve("결과"), 2000)
+})
+  .finally(() => alert("프라미스가 준비되었습니다."))
+  .then(result => alert(result));
+```
+
+- `finally(fnc)`은 성공,실패 상관 없이 프로미스 처리이후 실행된다
+- `fnc`는 인자가 없는 함수이다  
+  <br>
+
+### promise 체이닝
+
+```java script
+new Promise(function(resolve, reject) {
+
+  setTimeout(() => resolve(1), 1000); // (*)
+
+}).then(function(result) { // (**)
+
+  alert(result); // 1
+  return result * 2;
+
+}).then(function(result) { // (***)
+
+  alert(result); // 2
+  return result * 2;
+
+}).then(function(result) {
+
+  alert(result); // 4
+  return result * 2;
+
+});
+```
+
+`then(...).then(...).then(...)`와 같이 `then()`메소드를 이어가면서 사용할 수 있다
+`then()`은 항상 `promise`객체를 반환한다
+<br>
+
+## async
+
+- `new Promise`를 반환하는 함수를 `async`를 사용하여 똑같이 만들 수 있다
+
+```java script
+// 기존
+// function startAsync(age) {
+//  return new Promise((resolve, reject) => {
+//    if (age > 20) resolve(`${age} success`);
+//   else reject(new Error("Something went wrong"));
+//  });
+// }
+
+async function startAsync(age) {
+  if (age > 20) return `${age} success`;
+  // return Promise.solve(`${age} success`); 와 같다
+  else throw new Error(`${age} is not over 20`);
+}
+```
+
+1. 함수에 `async` 키워드를 추가
+2. `new Promise...` 부분을 삭제
+3. `resolve(value);` 부분을 `return value;` 로 수정
+4. `reject(new Error(…));` 부분을 `throw new Error(…);` 로 수정
+
+- `async` 특징
+  - `async` 함수의 리턴 값은 무조건 `promise` 객체
+  - 리턴 값이 `promise`값이 아니더라도 `promise`로 만든다
+- `async` 함수를 실행시킨 뒤 `then` 과 `catch` 를 활용하여 흐름을 제어해야 함
+
+## await
+
+```java script
+async function f() {
+
+  let promise = new Promise((resolve, reject) => {
+    setTimeout(() => resolve("완료!"), 1000)
+  });
+
+  let result = await promise; // 프라미스가 이행될 때까지 기다림 (*)
+
+  alert(result); // "완료!"
+}
+
+f();
+```
+
+- `await`은 `async`로 선언된 함수 내에서만 사용가능 하다
+- `awiat`뒤에는 `promise`타입 또는 반환값이 `promise`타입인 함수만 올 수 있다
+- `await`은 해당 함수를 호출시키며, 다 이행될때까지 기다린다
+
+### async와 await의 활용 예시
+
+```java script
+function logName() {
+  var user = fetchUser('domain.com/users/1');
+  if (user.id === 1) {
+    console.log(user.name);
+  }
+}
+```
+
+- `fechUser()`는 비동기적인 메소드이며 코드 실행 순서를 보장받지 못한다
+
+```java script
+function logName() {
+  var user = fetchUser('domain.com/users/1', function(user) {
+    if (user.id === 1) {
+      console.log(user.name);
+    }
+  });
+}
+```
+
+- 다음과 같이 콜백함수를 사용하면 코드 실행 순서를 보장받는다
+
+```java scipt
+async function logName() {
+  var user = await fetchUser('domain.com/users/1');
+  if (user.id === 1) {
+    console.log(user.name);
+  }
+}
+```
+
+- `async, await`를 사용하면 더 직관적이고 간결하게 코드 실행 순서를 정할 수 있다
