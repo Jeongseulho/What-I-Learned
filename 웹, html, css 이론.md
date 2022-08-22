@@ -7,6 +7,9 @@
   - [SSR과 CSR](#ssr과-csr)
 - [html](#html)
   - [async와 defer](#async와-defer)
+  - [시멘틱태그](#시멘틱태그)
+    - [section vs article](#section-vs-article)
+    - [image vs background-image](#image-vs-background-image)
 - [css](#css)
   - [text-align사용법](#text-align사용법)
   - [input:focus에서 outline변경](#inputfocus에서-outline변경)
@@ -145,6 +148,34 @@ _head태그 내부에 defer 사용_
 
 ![16](https://user-images.githubusercontent.com/110578739/185296302-4eea0d0a-e969-413b-a11d-f02fa1a80325.png)  
 <br>
+
+## 시멘틱태그
+
+- 시멘틱 태그 : "의미가 있는 태그"라는 뜻, 기존의 div, span과 같이 의미 없는 태그를 사용하는 대신에 알아보기 쉽게하기위하여 사용된다
+
+![26](https://user-images.githubusercontent.com/110578739/185824171-b6956656-144b-4a81-808e-6babf6e3804a.png)
+
+- `header` : 제목, 웹싸이트를 나타내는 로고, 검색 폼, 작성자 이름 등의 요소도 포함할 수 있다
+
+- `nav` : header 안에 여러가지 메뉴들이 모여있다면, div로 나누지 말고 nav 태그를 사용
+
+- `footer` : 웹사이트 제일 아래에 부가적인 정보(출처)나 링크가 들어있다면 사용
+
+- `main` : 현재 웹사이트에서 중요한 컨텐츠는 main 태그 안에
+
+- `aside` : main 안에서도 페이지의 컨텐츠와 직접적인 상관이 없는 내용들은 여기에 집어넣는 게 좋다 ex) 광고, 페이지와 연관된 다른 링크들 등
+
+- `article, section` : main 안에서도 div로만 구성하기보다는 용도에 따라서 이 두개의 tag를 사용해볼 수있다
+
+### section vs article
+
+- `article` : 문서 혹은 요소가 독립적으로 존재할 수 있을 때 사용
+- `section` : 논리적으로 관계 있는 문서 혹은 요소를 분리할 때 사용
+
+### image vs background-image
+
+- `background-image` : 문서의 내용과는 별개로 스타일링 목적만을 위해서 존재한다면 사용
+- `image` : 문서의 내용을 보충해주거나 관계있는 그림을 삽입할때 사용
 
 # css
 
