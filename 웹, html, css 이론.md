@@ -10,11 +10,16 @@
   - [시멘틱태그](#시멘틱태그)
     - [section vs article](#section-vs-article)
     - [image vs background-image](#image-vs-background-image)
+  - [속성(attribute)과 property](#속성attribute과-property)
+    - [비표준 속성](#비표준-속성)
+  - [form 태그](#form-태그)
+    - [GET과 POST](#get과-post)
 - [css](#css)
   - [text-align사용법](#text-align사용법)
   - [input:focus에서 outline변경](#inputfocus에서-outline변경)
   - [class 선택자 주의점](#class-선택자-주의점)
   - [float 속성](#float-속성)
+  - [flex](#flex)
     <br>
 
 # 웹
@@ -175,7 +180,106 @@ _head태그 내부에 defer 사용_
 ### image vs background-image
 
 - `background-image` : 문서의 내용과는 별개로 스타일링 목적만을 위해서 존재한다면 사용
-- `image` : 문서의 내용을 보충해주거나 관계있는 그림을 삽입할때 사용
+- `image` : 문서의 내용을 보충해주거나 관계있는 그림을 삽입할때 사용  
+  <br>
+
+## 속성(attribute)과 property
+
+- 브라우저는 웹페이지를 만나면 HTML을 읽어(파싱) DOM 객체를 생성한다. 요소 노드(element node)에서 대부분의 표준 HTML 속성(attribute)은 DOM 객체의 프로퍼티(property)가 된다
+
+- 예를 들어 `<body id=”page”>`태그가 있다면 id 속성은 DOM 객체 프로퍼티로 전환 돼 `body.id=”page”`로 접근 가능 (태그의 속성은 숫자로 넘겨도 문자열이 된다 ex) `<body id=3>`, `body.id` 는 `'3'`으로 표현)
+
+- HTML에서 태그는 복수의 속성을 가질 수 있다. 브라우저는 HTML을 파싱해 DOM 객체를 만들 때 HTML 표준 속성을 인식하고, 이 표준 속성을 사용해 DOM 프로퍼티를 만든다
+
+- 따라서 요소가 id 같은 표준 속성으로만 구성되어 있다면, 이에 대응하는 프로퍼티가 자연스레 만들어진다. 하지만 표준이 아닌 속성일 때는 상황이 달라진다
+
+- 한 요소에선 표준인 속성이 다른 요소에선 표준이 아닐 수 있다는 점에도 주의해야 한다. `type`은 `<input>`요소에서 표준이지만, `<body>`에선 아니다
+
+```html
+<body id="”body”" type="”…”">
+  <input id="”input”" type="”text”" />
+  <script>
+    alert(input.type); // text
+    alert(body.type); // undefined: type은 body의 표준 속성이 아니므로 DOM 프로퍼티가 생성되지 않습니다
+  </script>
+</body>
+```
+
+### 비표준 속성
+
+- 다양한 방식으로 활용되는 비표준 속성에는 한 가지 문제가 있다
+  비표준 속성을 사용해 코드를 작성했을 때 시간이 지나서 나중에 그 속성이 표준으로 등록되면 문제가 발생할 수 있다
+
+- 그래서 비표준 속성을 사용하기 위해 미리 약속된 방식이 존재, `data-*`속성
+
+- `data-`로 시작하는 속성은 모두 dataset이라는 프로퍼티에 저장, 예를 들어서 data-status라는 속성이 있다면, element.dataset.status라는 프로퍼티에 접근해서 그 값을 가져올 수 있다  
+  <br>
+
+## form 태그
+
+- `<form>` 태그는 웹 페이지에서의 입력 양식전체를 감싸는 태그이다 (로그인 창이나, 회원가입 폼 등)
+- 텍스트 필드에 글자를 입력하거나, 체크박스나 라디오 버튼을 클릭하고 제출 버튼을 누르면 백엔드 서버에 양식이 전달되어 정보를 처리
+- `<form>` 태그 필수 속성
+
+  - method : GET 또는 POST
+
+  - name : 식별을 위한 이름 지정
+
+  - action : 전송할 서버 쪽의 script 파일을 지정, 전송되는 서버 url 또는 html 링크
+
+- `<form>` 태그 내부에는 여러 다른 태그들을 사용해서 입력 폼을 구성한다
+
+  - `<input>`
+  - `<label>`
+  - `<select>, <option`>
+  - `<datalist>`
+  - `<fieldset>,<legend>`
+  - `<button>` 등등
+
+- `<form>`태그 접근시 `.form의name`을 사용해서 간단하게 접근할 수 있다
+
+```jsx
+<form
+  onSubmit={(event) => {
+    event.preventDefault();
+    const title = event.target.title.value;
+    // form태그 내부에서 name이 title인 태그의 값에 접근
+    const body = event.target.body.value;
+    // form태그 내부에서 name이 body인 태그의 값에 접근
+    props.onCreate(title, body);
+  }}
+>
+  <p>
+    <input type="text" name="title" placeholder="title" />
+  </p>
+  <p>
+    <textarea name="body" placeholder="body"></textarea>
+  </p>
+  <p>
+    <input type="submit" value="Create" />
+  </p>
+</form>
+```
+
+### GET과 POST
+
+- Get은 서버에서 어떤 데이터를 가져와서 보여줄때 사용, 어떤 값이나 내용, 상태등을 바꾸지 않는 경우에 사용
+- Post는 서버상의 데이터 값이나 상태를 바꾸기 위해서 사용
+
+| HTTP 메소드      | GET                                          | POST                        |
+| ---------------- | -------------------------------------------- | --------------------------- |
+| URL 예시         | http://localhost:3000/login?id=admin&pw=1234 | http://localhost:3000/login |
+| 데이터 담기는곳  | HTTP 패킷 Header                             | HTTP 패킷 Body              |
+| 리소스 전달 방식 | 쿼리스트링                                   | HTTP Body                   |
+| HTTP 응답 코드   | 200                                          | 201                         |
+| URL 데이터 노출  | o                                            | x                           |
+| 브라우저 기록    | o                                            | x                           |
+| 북마크 추가      | o                                            | x                           |
+| 데이터 길이 제한 | o                                            | x                           |
+| idempotent       | o                                            | x                           |
+
+**idempotent : 연산을 여러번하여도 결과가 달라지지 않는 성질**
+<br>
 
 # css
 
@@ -202,4 +306,7 @@ _head태그 내부에 defer 사용_
 ## float 속성
 
 - `float:left` 또는 `float:right`는 문서 기본 흐름에서 벗어나 왼쪽 또는 오른쪽에 부유하도록 하는 것
-- `float` 사용시 `display:inline-block`을 한것과 동일한 효과도 부여된다
+- `float` 사용시 `display:inline-block`을 한것과 동일한 효과도 부여된다  
+  <br>
+
+## flex
