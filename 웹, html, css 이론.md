@@ -19,7 +19,7 @@
   - [input:focus에서 outline변경](#inputfocus에서-outline변경)
   - [class 선택자 주의점](#class-선택자-주의점)
   - [float 속성](#float-속성)
-  - [flex](#flex)
+  - [margin써야하는 경우](#margin써야하는-경우)
     <br>
 
 # 웹, 네트워크
@@ -309,4 +309,11 @@ _head태그 내부에 defer 사용_
 - `float` 사용시 `display:inline-block`을 한것과 동일한 효과도 부여된다  
   <br>
 
-## flex
+## margin써야하는 경우
+
+![27](https://user-images.githubusercontent.com/110578739/186712726-10531fa4-dfbb-4ef0-889d-a2d2a7b9f3d0.jpg)
+
+- box1~box3을 다 `margin-top: 30px; margin-bottom: 10px;` 주더라도
+  box1과 box2 사이에 margin이 40px이 아니라 30px이 된다
+- 즉 margin은 여백끼리 겹친다
+- padding은 겹쳐지지 않는다
