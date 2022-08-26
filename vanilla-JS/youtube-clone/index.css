@@ -34,5 +34,6 @@ header .logo {
 }
 
 header .logo i {
-  color: var(--red-color);
+ color: var(--red-color);
 }
+
