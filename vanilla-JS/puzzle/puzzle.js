@@ -7,16 +7,42 @@ const tileCount = 16;
 
 let tiles = [];
 
-setGame();
+let isPlayimg = false;
+
+let timeInterval = null;
+let time = 0;
+
+const dragged = {
+  el: null,
+  class: null,
+  index: null,
+};
+
+const dropped = {
+  el: null,
+  class: null,
+  index: null,
+};
 
 function setGame() {
+  isPlayimg = true;
+
+  time = 0;
+  playTime.innerText = time;
+  gameText.style.display = "none";
   container.innerHTML = "";
+  clearInterval(timeInterval);
+
   tiles = createImageTiles();
   tiles.forEach((tile) => container.appendChild(tile));
   setTimeout(() => {
     container.innerHTML = "";
+    timeInterval = setInterval(() => {
+      playTime.innerText = time;
+      time++;
+    }, 1000);
     shuffle(tiles).forEach((tile) => container.appendChild(tile));
-  }, 2000);
+  }, 5000);
 }
 
 function createImageTiles() {
@@ -25,9 +51,14 @@ function createImageTiles() {
     .fill()
     .forEach((_, i) => {
       const li = document.createElement("li");
+
       li.setAttribute("data-index", i);
       li.setAttribute("draggable", "true");
       li.classList.add(`list${i}`);
+
+      /* cheat*/
+      li.innerText = `${i}`;
+
       tempArray.push(li);
     });
   return tempArray;
@@ -40,11 +71,28 @@ function shuffle(array) {
     [array[index], array[randomIndex]] = [array[randomIndex], array[index]];
     index--;
   }
+
   return array;
 }
 
+function checkStatus() {
+  const currentList = [...container.children];
+  const unMatchedList = currentList.filter(
+    (child, index) => Number(child.getAttribute("data-index")) !== index
+  );
+  console.log(unMatchedList);
+  if (unMatchedList.length === 0) {
+    gameText.style.display = "block";
+    isPlayimg = false;
+    clearInterval(timeInterval);
+  }
+}
+
 container.addEventListener("dragstart", (e) => {
-  console.log("start");
+  if (!isPlayimg) return;
+  dragged.el = e.target;
+  dragged.class = e.target.className;
+  dragged.index = [...e.target.parentNode.children].indexOf(e.target);
 });
 
 container.addEventListener("dragover", (e) => {
@@ -52,5 +100,29 @@ container.addEventListener("dragover", (e) => {
 });
 
 container.addEventListener("drop", (e) => {
-  console.log("drop");
+  if (!isPlayimg) return;
+  dropped.el = e.target;
+  dropped.class = e.target.className;
+  dropped.index = [...e.target.parentNode.children].indexOf(e.target);
+  if (dropped.class !== dragged.class) {
+    let originPlace;
+    let isLast;
+    if (dragged.el.nextSibling) {
+      originPlace = dragged.el.nextSibling;
+    } else {
+      originPlace = dragged.el.previousSibling;
+      isLast = true;
+    }
+    dragged.index > dropped.index
+      ? e.target.before(dragged.el)
+      : e.target.after(dragged.el);
+    isLast ? originPlace.after(e.target) : originPlace.before(e.target);
+  }
+  checkStatus();
 });
+
+startButton.addEventListener("click", () => {
+  setGame();
+});
+
+setGame();
