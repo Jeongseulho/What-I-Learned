@@ -7,7 +7,7 @@ const tileCount = 16;
 
 let tiles = [];
 
-let isPlayimg = false;
+let isPlaying = false;
 
 let timeInterval = null;
 let time = 0;
@@ -25,7 +25,7 @@ const dropped = {
 };
 
 function setGame() {
-  isPlayimg = true;
+  isPlaying = true;
 
   time = 0;
   playTime.innerText = time;
@@ -80,19 +80,19 @@ function checkStatus() {
   const unMatchedList = currentList.filter(
     (child, index) => Number(child.getAttribute("data-index")) !== index
   );
-  console.log(unMatchedList);
   if (unMatchedList.length === 0) {
     gameText.style.display = "block";
-    isPlayimg = false;
+    isPlaying = false;
     clearInterval(timeInterval);
   }
 }
 
 container.addEventListener("dragstart", (e) => {
-  if (!isPlayimg) return;
+  if (!isPlaying) return;
   dragged.el = e.target;
   dragged.class = e.target.className;
   dragged.index = [...e.target.parentNode.children].indexOf(e.target);
+  console.log(e);
 });
 
 container.addEventListener("dragover", (e) => {
@@ -100,7 +100,7 @@ container.addEventListener("dragover", (e) => {
 });
 
 container.addEventListener("drop", (e) => {
-  if (!isPlayimg) return;
+  if (!isPlaying) return;
   dropped.el = e.target;
   dropped.class = e.target.className;
   dropped.index = [...e.target.parentNode.children].indexOf(e.target);
@@ -114,9 +114,9 @@ container.addEventListener("drop", (e) => {
       isLast = true;
     }
     dragged.index > dropped.index
-      ? e.target.before(dragged.el)
-      : e.target.after(dragged.el);
-    isLast ? originPlace.after(e.target) : originPlace.before(e.target);
+      ? dropped.el.before(dragged.el)
+      : dropped.el.after(dragged.el);
+    isLast ? originPlace.after(dropped.el) : originPlace.before(dropped.el);
   }
   checkStatus();
 });
@@ -124,5 +124,3 @@ container.addEventListener("drop", (e) => {
 startButton.addEventListener("click", () => {
   setGame();
 });
-
-setGame();
