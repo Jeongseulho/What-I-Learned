@@ -25,6 +25,8 @@
   - [async](#async)
   - [await](#await)
     - [async와 await의 활용 예시](#async와-await의-활용-예시)
+  - [append()와 appendChild()](#append와-appendchild)
+    - [append, prepend, before, after 간단 비교](#append-prepend-before-after-간단-비교)
 
 ## 콜 스택
 
@@ -883,3 +885,133 @@ async function logName() {
 ```
 
 - `async, await`를 사용하면 더 직관적이고 간결하게 코드 실행 순서를 정할 수 있다
+  <br>
+
+## append()와 appendChild()
+
+append() 특징
+
+```java script
+const parent = document.createElement('div');
+const child = document.createElement('p');
+
+parent.append(child);
+// <div><p></p></div>
+```
+
+- 노드객체 삽입가능
+
+```java script
+const parent = document.createElement('div');
+parent.append('append 예시');
+// <div>append 예시</div>
+```
+
+- 문자열 삽입가능
+
+```java script
+const div = document.createElement('div');
+const span = document.createElement('span');
+const p = document.createElement('p');
+
+document.body.append(div, 'hello', span, p);
+// result
+<body>
+  <div></div>
+  hello
+  <span></span>
+  <p></p>
+</body>
+```
+
+- 여러개 자식요소 한번에 가능
+
+```java script
+const div = document.createElement('div');
+const span = document.createElement('span');
+const p = document.createElement('p');
+
+console.log(document.body.append(div, 'hello', span, p)); // undefined
+```
+
+- 반환값 없음  
+  <br>
+
+appendChild() 특징
+
+```java script
+const parent = document.createElement('div');
+const child = document.createElement('p');
+parent.appendChild(child);
+// <div><p></p></div>
+```
+
+- 노드객체 사용가능
+
+```java script
+const parent = document.createElement('div');
+
+parent.appendChild('텍스트');
+// Uncaught TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'
+```
+
+- 문자열 불가능
+
+```java script
+const div = document.createElement('div');
+const span = document.createElement('span');
+
+console.log(document.body.appendChild(div)); // div(Node object)
+```
+
+- 반환값 존재
+
+### append, prepend, before, after 간단 비교
+
+```html
+<div id="testDiv">
+  <div id="childDiv"></div>
+</div>
+```
+
+기존상태
+
+- append()
+
+```java script
+testDiv.append(insertDiv)
+// <div id="testDiv">
+//   <div id="childDiv"></div>
+//   <div><div>
+// </div>
+```
+
+- prepend()
+
+```java script
+testDiv.prepend(insertDiv)
+// <div id="testDiv">
+//   <div><div>
+//   <div id="childDiv"></div>
+// </div>
+```
+
+- before()
+
+```java script
+testDiv.before(insertDiv)
+// <div><div>
+// <div id="testDiv">
+//   <div id="childDiv"></div>
+// </div>
+```
+
+- after()
+
+```java script
+testDiv.before(insertDiv)
+// <div id="testDiv">
+//   <div id="childDiv"></div>
+// </div>
+// <div><div>
+```
