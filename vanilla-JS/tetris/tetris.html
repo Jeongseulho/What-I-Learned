@@ -1,19 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="tetris.css" />
-    <title>Document</title>
-  </head>
-  <body>
-    <div class="wrapper">
-      <div class="score">0</div>
-      <div class="playground">
-        <ul></ul>
-      </div>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="tetris.css" />
+  <title>Document</title>
+</head>
+
+<body>
+  <div class="wrapper">
+    <div class="game-text">
+      <span>게임종료</span>
+      <button>다시시작</button>
     </div>
-    <script src="tetris.js"></script>
-  </body>
+    <div class="score">0</div>
+    <div class="playground">
+      <ul></ul>
+    </div>
+  </div>
+  <script src="tetris.js" type="module"></script>
+</body>
+
 </html>
