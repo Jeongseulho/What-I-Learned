@@ -1,3 +1,83 @@
+# 테트리스 만들기
+
+![2022-08-29 17;29;44](https://user-images.githubusercontent.com/110578739/187158860-6275d0a9-3f3d-4b1e-bdb8-ca64d33da05f.gif)
+<br>
+
+## 기본 변수들
+
+```java script
+import BLOCKS from "./blocks.js";
+
+const playground = document.querySelector(".playground > ul");
+const gameText = document.querySelector(".game-text");
+const scoreDisplay = document.querySelector(".score");
+const restartButton = document.querySelector(".game-text > button");
+
+const GAME_ROWS = 20;
+const GAEM_COLS = 10;
+
+let score = 0;
+let duration = 500;
+let downInterval;
+let tempMovingItem;
+
+const movingItem = {
+  type: "",
+  direction: 0,
+  top: 0,
+  left: 3,
+};
+```
+
+## 격자 배경과 블럭 만들기
+
+```java script
+
+function init() {
+  tempMovingItem = { ...movingItem };
+
+  for (let i = 0; i < GAME_ROWS; i++) {
+    prependNewLine();
+  }
+  generateNewBlock();
+}
+
+function prependNewLine() {
+  const li = document.createElement("li");
+  const ul = document.createElement("ul");
+  for (let j = 0; j < GAME_ROWS; j++) {
+    const matrix = document.createElement("li");
+    ul.prepend(matrix);
+  }
+  li.prepend(ul);
+  playground.prepend(li);
+}
+```
+
+`ul, li`태그로 격자모양 생성  
+`ul`태그에 `li`태그 20개를 만들어 세로로 줄을 세우고  
+각각의 `li`태그에 `ul`태그를 생성 그 `ul`태그 하위에 `li`태그 10개를 가로로 줄을 세운다
+
+```java script
+function generateNewBlock() {
+  clearInterval(downInterval);
+  downInterval = setInterval(() => {
+    moveBlock("top", 1);
+  }, duration);
+
+  const blockArray = Object.entries(BLOCKS);
+  const randomIndex = Math.floor(Math.random() * blockArray.length);
+
+  movingItem.type = blockArray[randomIndex][0];
+
+  movingItem.left = 3;
+  movingItem.direction = 0;
+  movingItem.top = 0;
+  tempMovingItem = { ...movingItem };
+  renderBlocks();
+}
+```
+
 ```java script
   tempMovingItem = movingItem;
   movingItem.left = 3;
