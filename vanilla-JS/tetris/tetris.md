@@ -95,6 +95,8 @@ function generateNewBlock() {
 ```
 
 - `tempMovingItem`값도 바뀐다
+- 객체는 해당 값을 갖고있는게 아니고 해당값이 담겨있는 주소를 갖고있다
+- 바로 대입할 경우 1개의 객체에 2개의 변수에서 해당 1개의 객체에서 참조하는것
 
 ```java script
   tempMovingItem = {...movingItem};
@@ -102,6 +104,7 @@ function generateNewBlock() {
 ```
 
 - `tempMovingItem` 값유지
+- 이 경우 새로운 객체를 만들어서 객체 자체가 2개가 되는것
 
 ## 블럭 움직임과 블럭 렌더링
 
@@ -365,3 +368,4 @@ restartButton.addEventListener("click", () => {
 - 반복문 사용중 중간에 멈춰야 할때는 `some, every, for`문을 사용하자
 - 어떤 기능을 만들기위해서 어떤 정보와 어떤 상태가 필요한지 생각해보고 그 정보와 상태들을 담을 변수, 객체를 먼저 생각하고 정의해보자
 - `console.log`나 디버깅을 통해서 내가 목표로 하는, 가져오려고 하는 값이 맞는지 꼼꼼하게 확인해보자
+- 객체 변수를 만들때 변수는 객체내의 값을 갖고있는게 아니고 참조값/주소를 갖고 있는것이다

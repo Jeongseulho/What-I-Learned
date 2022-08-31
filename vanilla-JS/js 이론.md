@@ -27,6 +27,7 @@
     - [async와 await의 활용 예시](#async와-await의-활용-예시)
   - [append()와 appendChild()](#append와-appendchild)
     - [append, prepend, before, after 간단 비교](#append-prepend-before-after-간단-비교)
+  - [객체 문법](#객체-문법)
 
 ## 콜 스택
 
@@ -1015,3 +1016,30 @@ testDiv.before(insertDiv)
 // </div>
 // <div><div>
 ```
+
+## 객체 문법
+
+```java script
+let name = "John";
+let age = 20;
+
+let person= {
+      name,  // name:name
+      age    // age:age
+}
+```
+
+- 객체 키값과 밸류에 넣을 변수가 이름이 같으면 생략 가능
+
+```java script
+let name = "John";
+
+let person= {
+      name,  // name:name
+      printName(){    // printName : function(){alert(name)}
+        alert(name)
+      }
+}
+```
+
+- 객체내 메소드 만들때 다음과 같이 축약 가능
