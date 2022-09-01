@@ -35,3 +35,7 @@
   cursor: pointer;
   opacity: 0.6;
 }
+
+.moving {
+  cursor: pointer;
+}

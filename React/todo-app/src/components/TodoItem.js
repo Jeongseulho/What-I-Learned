@@ -1,5 +1,9 @@
 import React from "react";
-import { MdCheckBox, MdCheckBoxOutlineBlank } from "react-icons/md";
+import {
+  MdCheckBox,
+  MdCheckBoxOutlineBlank,
+  MdFormatLineSpacing,
+} from "react-icons/md";
 import "./TodoItem.css";
 
 const TodoItem = ({
@@ -9,6 +13,7 @@ const TodoItem = ({
   onChangeSelectedTodo,
 }) => {
   const { id, text, checked } = todo;
+
   return (
     <div className="TodoItem">
       <div className={`content ${checked ? "checked" : ""}`}>

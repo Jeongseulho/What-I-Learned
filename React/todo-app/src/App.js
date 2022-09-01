@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./App.css";
 import Template from "./components/Template";
 import TodoList from "./components/TodoList";
-import { MdAddCircle } from "react-icons/md";
+import { MdAddCircle, MdCheckCircle } from "react-icons/md";
 import TodoInsert from "./components/TodoInsert";
 
 let nextId = 4;
@@ -73,6 +73,14 @@ const App = () => {
     );
   };
 
+  const allCheck = () => {
+    setTodos((todos) =>
+      todos.map((todo) =>
+        todo.checked === false ? { ...todo, checked: true } : todo
+      )
+    );
+  };
+
   return (
     <Template todoLength={todos.length}>
       <TodoList
@@ -83,6 +91,9 @@ const App = () => {
       />
       <div className="add-todo-button" onClick={onInsertToggle}>
         <MdAddCircle />
+      </div>
+      <div className="all-complete-button" onClick={allCheck}>
+        <MdCheckCircle />
       </div>
       {insertToggle && (
         <TodoInsert
