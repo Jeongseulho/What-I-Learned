@@ -1,68 +1,109 @@
-set은 비동기적이다
-컴포넌트가 처음부터 다시 시작한다
-https://velog.io/@jjunyjjuny/React-useState%EB%8A%94-%EC%96%B4%EB%96%BB%EA%B2%8C-%EB%8F%99%EC%9E%91%ED%95%A0%EA%B9%8C
+# 목차
 
-💡 최상위(at the Top Level)에서만 hook을 호출해야 합니다.
-반복문, 조건문 혹은 중첩 함수에서 hook을 호출하면 안 됩니다.
+- [목차](#목차)
 
-state는 컴포넌트의 실행 순서대로 배열에 저장될 것입니다.
+  - [useState의 이해](#useState의-이해)
+    - [useState의 사용조건](#useState의-사용조건)
+    - [useState와 함수형인자](#useState와-함수형인자)
+  - [컴포넌트 반환에서 출력결정방법](#컴포넌트-반환에서-출력결정방법)
 
-만약 조건문 등을 만나면 컴포넌트의 실행 순서가 달라질 수 있습니다.
+    <br>
 
-💡 오직 React 함수 내에서 hook을 호출해야 합니다
-Hook을 일반적인 JavaScript 함수에서 호출하면 안 됩니다.
+# useState의 이해
 
-함수 컴포넌트, 커스텀 훅 내에서만 호출할 수 있습니다.
+```java script
+let value
 
-두 규칙을 따랐을 때 컴포넌트가 렌더링 될 때마다 동일한 순서로 hook이 호출되는 것을 보장합니다.
+export useState(initialValue){
+  if(value===undefined){
+    value initialValue
+  }
+  const setState = (newValue) => {
+    value = newValue
+  }
+  return [value, setState]
+}
+```
 
-useState와 함수형 인자
+다음은 useState의 실제 내부 모습이다 여기서 알 수 있는 점은
+
+- `setState`는 사실은 클로저이다
+
+`useState`사용한 `App`컴포넌트에서 일어나는 과정을 요약하면
+
+1. `useState`는 실행될 때 마다 초기값을 전달받지만, 내부적으로 `value`값이 `undefined`인지 확인해서, 최초의 호출에만 초기값을 `value`에 할당하고, 이후 초기값은 사용되지 않는다
+2. `value`와 그 값을 재할당하는 `setState` 함수를 배열에 담아 반환
+3. `setState` 호출시 전달 받은 값을 react 모듈 상단의 `value`에 할당
+4. 이후 컴포넌트 재실행 및 재렌더링
+5. 컴포넌트 재 실행시에 `useState`는 내부적으로 `value`값을 확인하고, `undefined`가 아닌 값이 할당되어 있기 때문에 초기값 할당문을 실행하지 않는다
+6. `useState`가 현재 시점의 `value와 `setState`를 반환
+
+즉, `setState` 함수는 자신과 함께 반환된 변수를 변경시키는게 아니라(`const`!), 다음 `useState`가 반환할 react 모듈의 `value`를 변경시키고, 컴포넌트를 리렌더링 시키는 역할, 변경된 값은 `useState`가 가져옴
+
+주의점 : `setState` 호출 이후 로직에서도 `state`의 값은 이전과 동일  
+변경된 값은 다음 컴포넌트 함수가 실행될 때 `useState`가 가져온다
+<br>
+
+## useState의 사용조건
+
+1. 최상위(at the Top Level)에서만 hook을 호출  
+   반복문, 조건문 혹은 중첩 함수에서 hook을 호출하면 안 된다
+
+2. 오직 React 함수(컴포넌트) 내에서 hook을 호출해야 한다
+   Hook을 일반적인 JavaScript 함수에서 호출하면 안 된다
+
+두 규칙을 따랐을 때 컴포넌트가 렌더링 될 때마다 동일한 순서로 hook이 호출되는 것을 보장  
+<br>
+
+## useState와 함수형인자
+
+```java script
 const Counter = () => {
 const [count, setCount] = useState(0);
 
 const increase1 = () => {
-setCount(count + 1);
-setCount(count + 1);
-setCount(count + 1);
-}
+    setCount(count + 1);
+    setCount(count + 1);
+    setCount(count + 1);
+  }
 
 const increase2 = () => {
-setCount((count) => count + 1);
-setCount((count) => count + 1);
-setCount((count) => count + 1);
+    setCount((count) => count + 1);
+    setCount((count) => count + 1);
+    setCount((count) => count + 1);
+  }
 }
-}
+```
 
-export default Counter;
-리액트를 배우다 보면 한 번쯤 만날 수 있는 예제입니다.
+위의 예제에서 increase1 함수의 결과는 3이 아닌 1  
+반면 increase2 함수의 결과는 의도한 대로 3
 
-위의 예제에서 increase1 함수의 결과는 3이 아닌 1입니다.
+새로운 상태가 바로 이전 상태를 통해 계산되어야 하면 함수를 써야 합니다.
 
-반면 increase2 함수의 결과는 의도한 대로 3이 됩니다.
+여러 setState 업데이트를 한 번에 묶어서 처리한 후 마지막 값을 통해 state를 결정하는 방식
 
-리액트는 setState의 인자가 변수인가 함수인가의 차이를 이렇게 정리합니다.
+**예시**
 
-If the new state is computed using the previous state, you can pass a function to setState.
-
-: 새로운 상태가 바로 이전 상태를 통해 계산되어야 하면 함수를 써야 합니다.
-
-React may batch multiple setState() calls into a single update for performance.
-
-During subsequent re-renders, the first value returned by useState will always be the most recent state after applying updates.
-
-: 리액트는 퍼포먼스 향상을 위해 특별한 배치 프로세스를 사용하기 때문입니다.
-
-여러 setState 업데이트를 한 번에 묶어서 처리한 후 마지막 값을 통해 state를 결정하는 방식입니다..
-
+```java script
 const onInsertToggle = () => {
 setInsertToggle((prev) => !prev);
 };
-set 함수안에 토글 기능 넣기
+```
 
-        </div>
+set 함수안에 토글 기능 넣기  
+<br>
+
+## 컴포넌트 반환에서 출력결정방법
+
+```java script
+return(
+
+    <div>
       {insertToggle && <TodoInsert />}
-    </Template>
+    </div>
 
 );
+```
 
-{a && b} 로 둘다 트루면 출력하는 기능 <TodoInsert> 는항상트루
+{a && b} 로 둘다 트루면 출력하는 기능 `<TodoInsert>` 는 컴포넌트로 항상 true  
+`insertToggle1`의 true or false 값으로 출력할지 말지 결정
