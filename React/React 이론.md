@@ -2,14 +2,31 @@
 
 - [목차](#목차)
 
+  - [React가 가상DOM을 사용하는 절차](#React가-가상DOM을-사용하는-절차)
   - [useState의 이해](#useState의-이해)
     - [useState의 사용조건](#useState의-사용조건)
     - [useState와 함수형인자](#useState와-함수형인자)
   - [컴포넌트 반환에서 출력결정방법](#컴포넌트-반환에서-출력결정방법)
   - [컴포넌트 마운트와 언마운트](#컴포넌트-마운트와-언마운트)
-  - [styled-components]
+  - [React 렌더링 성능 최적화 방법](#React-렌더링-성능-최적화-방법)
 
     <br>
+
+# React가 가상DOM을 사용하는 절차
+
+1. 특정 컴포넌트에서 setState 호출 등의 이유로 컴포넌트 상태가 변하면 해당 컴포넌트의 shouldComponentUpdate 함수를 실행한다. 그리고 이 함수가 true를 반환하면 render 함수를 실행한다
+2. 상태가 변한 컴포넌트를 루트 노드로 해서 깊이 우선 탐색 방식으로 각 자식 컴포넌트의 shouldComponentUpdate 함수와 render 함수를 실행한다.
+3. 이렇게 render 함수를 실행하여 얻은 새로운 Virtual DOM을 실제 DOM과 동기화되어 있는 기존 Virtual DOM과 비교해서 변경 사항을 파악한다(reconcilation)
+4. 그리고 실제로 변경된 부분만 DOM API를 호출하여 DOM에 반영하면, 브라우저가 변경 사항이 반영된 DOM과 CSSOM으로 새로운 Render Tree를 생성해서 화면을 다시 그린다.
+
+요약하면
+
+1. 데이터가 업데이트 되면 Virtual DOM에 리렌더링
+2. 이전 Virtual DOM에 있던 내용과 현재의 내용을 비교함 (가상 돔 끼리 비교)
+3. 바뀐 부분만 실제 DOM에 적용
+
+실제 React는 성능이 빠른편이 아니다 대부분의 모니터 화면이 60fps를 가지고 이에 대응하기에 충분히 빠르기때문에 사용하는 것 이다  
+<br>
 
 # useState의 이해
 
@@ -108,4 +125,33 @@ return(
 ```
 
 {a && b} 로 둘다 트루면 출력하는 기능 `<TodoInsert>` 는 컴포넌트로 항상 true  
-`insertToggle1`의 true or false 값으로 출력할지 말지 결정
+`insertToggle1`의 true or false 값으로 출력할지 말지 결정  
+<br>
+
+# 컴포넌트 마운트와 언마운트
+
+```java script
+useEffect(() => {
+  (컴포넌트가 생길 때 수행 작업); // 마운트
+  return {
+      (컴포넌트가 사라질 때 수행 작업); // 언마운트
+  }
+}, [의존성])
+```
+
+- 마운트 : 의존성의 값이 바뀌면서 컴포넌트가 생성 되는것
+- 언마운트 : 의존성의 값이 바뀌면서 컴포넌트가 삭제 되는것
+
+```java script
+useEffect(() => {
+        console.log('user 값이 설정됨');
+        console.log(user);
+        return () => {
+            console.log('user 값이 바뀌기 전');
+            console.log(user);
+        }
+    }, [user])
+```
+
+다음과 같이 user 값이 수정되면 언마운트가 먼저 일어나므로 `return`의 함수가 실행 되고 이후에 마운트가 일어나 `return`전의 함수 실행  
+언마운트는 cleanup 이라고 불리기도 하며 `clearInterval, clearTimeout`등에 쓰인다
