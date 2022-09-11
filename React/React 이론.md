@@ -7,8 +7,13 @@
     - [useState의 사용조건](#useState의-사용조건)
     - [useState와 함수형인자](#useState와-함수형인자)
   - [컴포넌트 반환에서 출력결정방법](#컴포넌트-반환에서-출력결정방법)
-  - [컴포넌트 마운트와 언마운트](#컴포넌트-마운트와-언마운트)
-  - [React 렌더링 성능 최적화 방법](#React-렌더링-성능-최적화-방법)
+  - [useEffect](#useEffect)
+  - [useRef](#useRef)
+  - [useContext](#useContext)
+  - [useMemo](#useMemo)
+  - [useCallback](#useCallback)
+    - [useMemo, useCallback을 사용한 컴포넌트 최적화](#useMemo,-useCallback을-사용한-컴포넌트-최적화)
+  - [useReducer](#useReducer)
 
     <br>
 
@@ -128,30 +133,206 @@ return(
 `insertToggle1`의 true or false 값으로 출력할지 말지 결정  
 <br>
 
-# 컴포넌트 마운트와 언마운트
+# useEffect
 
 ```java script
 useEffect(() => {
-  (컴포넌트가 생길 때 수행 작업); // 마운트
+  (마운트시 수행 작업 + 의존성 바뀔때마다 수행 작업);
   return {
-      (컴포넌트가 사라질 때 수행 작업); // 언마운트
+      (언마운트시 수행 작업); // clean up 함수
   }
 }, [의존성])
 ```
 
-- 마운트 : 의존성의 값이 바뀌면서 컴포넌트가 생성 되는것
-- 언마운트 : 의존성의 값이 바뀌면서 컴포넌트가 삭제 되는것
+컴포넌트 리렌더링 = 기존 컴포넌트 언마운트 + 새로운 컴포넌트 마운트  
+의존성 값은 렌더링과 관련된 값이어야만 한다(useState의 변수 또는 그 변수의 의존해서 바뀌는 변수) 아닐경우 의미 없음
+
+useEffect의 3가지 경우
+
+1. deps(의존성)에 빈 배열  
+   처음 컴포넌트 마운트 됐을 때 `useEffect`내 함수 호출(이후 마운트 실행x)  
+   컴포넌트 언마운트 될 때 `cleanup` 함수 호출
+
+2. deps(의존성)에 의존 값 존재  
+   처음 컴포넌트 마운트 됐을 때 `useEffect`내 함수 호출  
+   의존 값이 바뀌기 직전에 언마운트 되면서 `cleanup` 함수 호출  
+   의존 값이 바뀐 후에 마운트되면서 `useEffect`내 함수 호출
+
+3. 파라미터를 안 넣었을 경우  
+    리렌더링 될 때마다 함수 호출 (언마운트 + 마운트 반복)
+   <br>
+
+# useRef
 
 ```java script
-useEffect(() => {
-        console.log('user 값이 설정됨');
-        console.log(user);
-        return () => {
-            console.log('user 값이 바뀌기 전');
-            console.log(user);
-        }
-    }, [user])
+const ref = useRef("Hi") // ref = {current : "Hi} 로 저장됨
 ```
 
-다음과 같이 user 값이 수정되면 언마운트가 먼저 일어나므로 `return`의 함수가 실행 되고 이후에 마운트가 일어나 `return`전의 함수 실행  
-언마운트는 cleanup 이라고 불리기도 하며 `clearInterval, clearTimeout`등에 쓰인다
+특징
+
+1. State가아닌 Ref에 변수 저장하고 값 변경시 Ref는 렌더링 되지 않고 내부적으로 값만 바뀌어서 불필요한 렌더링 줄임
+2. 다시 렌더링 되어도 값이 유지가된다
+
+DOM 접근하기
+
+```java script
+function App() {
+  const inputRef = useRef();
+
+  useEffect(() => {
+    console.log(inputRef); // {current : input} input태그를 의미
+    inputRef.current.focus(); // 첫렌더링시 실행
+  }, [])
+
+  return (
+    <div>
+      <input ref={inputRef} type="text"/> // ref로 넘겨줌
+    </div>
+  );
+}
+```
+
+위 예제는 첫 렌더링시 입력태그에 `focus`가 있게 하는 기능  
+useRef() 를 사용하여 Ref 객체를 만들고, 이 객체를 우리가 선택하고 싶은 DOM 에 ref 값으로 설정 그러면, Ref 객체의 .current 값은 우리가 원하는 DOM 을 가르키게 된다
+
+# useContext
+
+```java script
+// AppContext 객체를 생성
+export const AppContext = createContext(null);
+// null자리는 <AppContext.Provider>로 감싸져있지 않았는데 AppContext를 불러와서 사용하려 할 경우 정해줄 default 값이다
+
+const App = () => {
+  const user = {
+    name: "김채원",
+    job: "가수"
+  };
+
+  return (
+    <>
+      <AppContext.Provider value={user}> // value로 user객체를 넘겨준다
+          <Children />
+      </AppContext.Provider> // 이 태그안에 감싸져 있는 하위 컴포넌트에   value값을 넘길 수 있다
+    </>
+  );
+};
+```
+
+```java script
+const Children = () => {
+
+  const user = useContext(AppContext);
+  // 또는 const {name, job} = useContext(AppContext);
+
+  return (
+    <>
+      <h3>AppContext에 존재하는 값의 name은 {user.name}입니다.</h3>
+      <h3>AppContext에 존재하는 값의 job은 {user.job}입니다.</h3>
+    </>
+  );
+};
+```
+
+props를 연쇄적으로 이어서 전달하지 않고 `useContext`를 써서 전역적으로 전달 가능  
+<br>
+
+# useMemo
+
+```java script
+const memo = useMemo(콜백 함수, [의존성])
+```
+
+- 변수 `memo`에 `useMemo`의 콜백함수의 리턴값이 담긴다
+- 여기서 의존성 값이 바뀔때에만 콜백함수가 실행되고 해당 리턴값이 변수에 담긴다
+- 컴포넌트가 리렌더링 되면 값을 다시 할당 해야하는데 자주 쓰이는 값을 캐싱하여 불필요한 연산을 줄이는 목적
+
+```java script
+const [number, setNumber] = useState(0);
+const [isKorea, setIsKorea] = useState(true);
+
+const location = {
+  country : isKorea ? "한국" : "외국"
+}
+
+useEffect(() => {
+  console.log("useEffect호출")
+},[location]);
+```
+
+`useEffect`를 사용해서 객체타입인 변수 `location`이 변할때만 실행시키고 싶은데 여기서 `setNumber()`를 사용하면 해당 `console.log("useEffect호출)`이 실행된다
+
+- 이유는 원시타입변수(string, number, boolean 등)와 다르게 객체타입변수(object, array 등)은 변수에 값이아닌 참조할 주소가 담긴다
+- `setNumber`를 통해 리렌더링을 할 때 마다 `location`은 다시 선언 되며, 이때마다 객체의 값은 그대로지만 사실상 `location`변수 자체에 담긴 주소 참조값은 매번 달라지므로 `useEffect`에서 다르다고 판단한다
+
+```java script
+const location = useMemo(()=>{
+  return {
+    country: isKorea ? "한국" : "외국"
+  }
+},[isKorea])
+
+useEffect(() => {
+  console.log("useEffect호출")
+},[location]);
+```
+
+다음과 같이 `useMemo`를 사용해서 변수에 객체를 담으면 `setNumber()`를 사용해도 `console.log("useEffect호출)`이 실행되지 않는 의도하는 상황을 만든다  
+<br>
+
+```java script
+import {memo} from "react"
+
+...
+
+export default memo(myComponent)
+```
+
+다음과 같이 사용하면 간단히 `MyComponent`의 상위 컴포넌트에서 `MyComponent`를 호출할때 전해준 `props`가 바뀐 경우에만 `MyComponent`를 다시 렌더링하고 `props`가 변한게 없다면 굳이 다시 렌더링하지 않는다  
+만약 `props`가 객체라면 위의 `useMemo`를 함께사용한다
+<br>
+
+# useCallback
+
+```java script
+const callback = useCallback(콜백 함수, [의존성])
+```
+
+- `useCallback`은 `useMemo`의 함수버전이다 함수또한 객체 형태로 변수에 저장이 된다
+- `useMemo`와 달리 리턴값이 담기는게 아닌 콜백함수 그자체가 담긴다
+- 의존성의 값이 바뀔때에만 다시 변수에 해당 콜백함수를 다시 담는다
+- 의존성값이 바뀐다고 콜백함수가 실행되는것이 아니다 콜백함수를 다시 담을 뿐이다
+- 위에서 `useMemo`와 `memo`를 같이 사용하듯이 건네주는 `props`가 함수인경우는 `useCallback`을 사용한다  
+  <br>
+
+# useReducer
+
+```java script
+const reducer = (state, action) => {
+  switch(action.type){
+    case "deposit":
+      return state + action.payload;
+    case "withdraw":
+      return state - action.payload;
+    default:
+      return state;
+  }
+}
+```
+
+- `useReducer`에 쓸 함수를 정의해둔다
+
+```java script
+const [money, dispatch] = useReucer(reducer,0);
+```
+
+- `useReducer`는 함수와 초기값을 받는다
+- `reducer`함수의 `state`인자는 현재 `money`값을 받는다
+- `money`는 초깃값 0을 받고 후에 `dispatch`함수가 호출될시 리턴값을 담는다
+- `dispatch()`를 사용해서 `reducer()`를 대신 호출한다
+
+```java script
+dispatch({type:"deposit", payload:1000})
+```
+
+- `dispatch()`로 호출할때 `action`파라미터를 객체형태로 넘긴다
+- 위에서 설명했듯이, `state`는 `useReducer`의 초기값, 이후 실행시에는 실행된 함수의 리턴값이다
