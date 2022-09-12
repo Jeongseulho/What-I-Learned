@@ -21,6 +21,8 @@
   - [class 선택자 주의점](#class-선택자-주의점)
   - [float 속성](#float-속성)
   - [margin써야하는 경우](#margin써야하는-경우)
+  - [object-fit](#object-fit)
+  - [flex-container의 flex 속성](#flex-container의-flex-속성)
     <br>
 
 # 웹, 네트워크
@@ -334,3 +336,18 @@ _head태그 내부에 defer 사용_
   box1과 box2 사이에 margin이 40px이 아니라 30px이 된다
 - 즉 margin은 여백끼리 겹친다
 - padding은 겹쳐지지 않는다
+  <br>
+
+## object-fit
+
+- `fill` : 대체되는 요소의 내용이 지정된 너비와 높이에 따라 크기가 확대(scale up) 혹은 축소(down), 늘어나거나(stretch) 움츠러든다(shrunk). 요소를 가득 채울수 있는 크기로 변화되면서 종횡비는 유지되지 않는다. 이것은 일반적으로 이미지에 강제로 너비와 높이를 지정하는 것과 같다.
+
+- `contain` : 내용이 종횡비를 유지하면서 요소에 정의된 너비와 높이안에서 가능한한 많이 확대(scale up)시킨다.
+
+- `cover` : 내용이 종횡비를 유지하면서 정의된 너비와 높이를 가득 채울때까지 확대된다.
+
+## flex-container의 flex 속성
+
+`flex : 2`은 `flex : 2 1 0`과 같고 `flex-grow:2, flex-shirink:1, flex-basis:0`이란 의미(`flex-grow`만 조정하고 나머지는 1,0고정)  
+`flex`내부 아이템들의 `flex`값 비율만큼 남은여백을 나누어 가진다  
+간단하게 요약하면 숫자크면 해당 아이템이 차지하는 크기 커짐
