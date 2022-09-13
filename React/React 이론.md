@@ -14,6 +14,7 @@
   - [useCallback](#useCallback)
     - [useMemo, useCallback을 사용한 컴포넌트 최적화](#useMemo,-useCallback을-사용한-컴포넌트-최적화)
   - [useReducer](#useReducer)
+  - [onClick 사용시 주의](#onClick-사용시-주의)
 
     <br>
 
@@ -335,4 +336,18 @@ dispatch({type:"deposit", payload:1000})
 ```
 
 - `dispatch()`로 호출할때 `action`파라미터를 객체형태로 넘긴다
-- 위에서 설명했듯이, `state`는 `useReducer`의 초기값, 이후 실행시에는 실행된 함수의 리턴값이다
+- 위에서 설명했듯이, `state`는 `useReducer`의 초기값, 이후 실행시에는 실행된 함수의 리턴값이다  
+  <br>
+
+# onClick 사용시 주의
+
+```java script
+onClick={setCount(count + 1)} // 사용금지
+
+onClick={() => setCount(count + 1)} // 사용가능
+```
+
+`onClick`은 함수를 실행하는 코드이기 때문에 함수 뒤에 () 안붙여도 실행됨  
+이렇게 하면 컴포넌트가 렌더링 되는 동시에 실행이 된다.  
+그러면? 렌더링 될 때 count 가 1 증가 하는데, state 가 변경 되었으니 컴포넌트가 다시 렌더링 됨  
+다시 렌더링 됐으니 또 count 가 1 올라가고… state 변경으로 인해 또 다시 렌더링, 무한루프
