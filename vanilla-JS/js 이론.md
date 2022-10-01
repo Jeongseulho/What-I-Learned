@@ -28,6 +28,7 @@
   - [append()와 appendChild()](#append와-appendchild)
     - [append, prepend, before, after 간단 비교](#append-prepend-before-after-간단-비교)
   - [객체 문법](#객체-문법)
+  - [Object[key] vs Object.key](#objectkey-vs-objectkey)
 
 ## 콜 스택
 
@@ -965,7 +966,8 @@ const span = document.createElement('span');
 console.log(document.body.appendChild(div)); // div(Node object)
 ```
 
-- 반환값 존재
+- 반환값 존재  
+  <br>
 
 ### append, prepend, before, after 간단 비교
 
@@ -1042,4 +1044,21 @@ let person= {
 }
 ```
 
-- 객체내 메소드 만들때 다음과 같이 축약 가능
+- 객체내 메소드 만들때 다음과 같이 축약 가능  
+  <br>
+
+## Object[key] vs Object.key
+
+```java script
+var a = {
+  b  : 1,
+  c  : 2
+}
+for (key in a) {
+ console.log(a.key) // undefined, undefined
+ console.log(a[key])// 1,2
+}
+```
+
+- `a.key`에서 key는 그자체의 이름 변수x
+- `a[key]`에서 key는 변수로 접근 가능

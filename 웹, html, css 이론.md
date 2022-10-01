@@ -73,7 +73,7 @@
 
   1. 자원(Resource) : HTTP URL
   2. 자원에 대한 행위 : HTTP Method
-  3. 자원에 대한 표현(Representations)  
+  3. 자원에 대한 표현(Representations) : Header(image/gif, text/html 등)
      <br>
 
 - REST API : REST의 원리를 따르는 API
