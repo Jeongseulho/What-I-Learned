@@ -4,12 +4,26 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/home/login.css" />
     <title>Document</title>
   </head>
   <body>
-    <input class="id" type="text" placeholder="id" />
-    <input class="passwd" type="text" placeholder="password" />
-    <button>로그인</button>
+    <div class="login-page">
+      <div class="form">
+        <form class="login-form">
+          <input class="id" type="text" placeholder="username" />
+          <input
+            class="passwd"
+            type="current-password"
+            placeholder="password"
+          />
+          <button>login</button>
+          <p class="message">
+            Not registered? <a href="/register">Create an account</a>
+          </p>
+        </form>
+      </div>
+    </div>
     <script src="/home/login.js"></script>
   </body>
 </html>
