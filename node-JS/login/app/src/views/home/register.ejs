@@ -12,18 +12,23 @@
       <div class="form">
         <form class="login-form">
           <input class="id" type="text" placeholder="아이디" />
+          <input class="name" type="text" placeholder="이름" />
+
           <input
             class="passwd"
             type="current-password"
-            placeholder="password"
+            placeholder="비밀번호"
           />
-          <p class="button">login</p>
-          <p class="message">
-            Not registered? <a href="/register">Create an account</a>
-          </p>
+          <input
+            class="confirm-passwd"
+            type="current-password"
+            placeholder="비밀번호 확인"
+          />
+          <p class="button">Sign up</p>
+          <p class="message">Already registered? <a href="/login">login</a></p>
         </form>
       </div>
     </div>
-    <script src="/home/login.js"></script>
+    <script src="/home/register.js"></script>
   </body>
 </html>
