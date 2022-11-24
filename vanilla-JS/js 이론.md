@@ -28,7 +28,8 @@
   - [append()와 appendChild()](#append와-appendchild)
     - [append, prepend, before, after 간단 비교](#append-prepend-before-after-간단-비교)
   - [객체 문법](#객체-문법)
-  - [Object[key] vs Object.key](#objectkey-vs-objectkey)
+  - [Object\[key\] vs Object.key](#objectkey-vs-objectkey)
+  - [\&\&, || 연산자](#--연산자)
 
 ## 콜 스택
 
@@ -309,21 +310,21 @@ count();
 <div id="progress"></div>
 
 <script>
-  let i = 0;
+	let i = 0;
 
-  function count() {
-    // do a piece of the heavy job (*)
-    do {
-      i++;
-      progress.innerHTML = i;
-    } while (i % 1e3 != 0);
+	function count() {
+		// do a piece of the heavy job (*)
+		do {
+			i++;
+			progress.innerHTML = i;
+		} while (i % 1e3 != 0);
 
-    if (i < 1e9) {
-      setTimeout(count);
-    }
-  }
+		if (i < 1e9) {
+			setTimeout(count);
+		}
+	}
 
-  count();
+	count();
 </script>
 ```
 
@@ -345,8 +346,7 @@ count();
 - BOM(Browser Object Model) : java script로 브라우저를 제어하기 위해 브라우저를 객체화 한것
 - DOM과 마찬가지 여러 내장 메소드들을 사용하여 브라우저를 제어가능
 - 모든 객체가 소속된 객체인 `window`를 사용하여 제어가능
-- ex) `window.alert` (기존 `alert`은 원래 window를 생략하여 사용한것), `window.document` (DOM트리 최상위노드인 웹문서를 가르킨다)
-  <br>
+- ex) `window.alert` (기존 `alert`은 원래 window를 생략하여 사용한것), `window.document` (DOM트리 최상위노드인 웹문서를 가르킨다) <br>
 
 ## this
 
@@ -499,8 +499,7 @@ button.addEventListener('click', function() {
 
 `addEventListener`의 콜백함수에서는 `this`에 해당 이벤트 리스너가 호출된 엘리먼트가 바인딩 되도록 정의  
 이처럼 이미 `this`의 값이 정해져있는 콜백함수의 경우, 화살표 함수를 사용하면 기존 바인딩 값이 사라지고 상위 스코프가 바인딩되기 때문에 의도했던대로 동작하지 않을 수 있다  
-물론 상위 스코프의 속성들을 쓰려고 의도한 경우라면 사용가능
-<br>
+물론 상위 스코프의 속성들을 쓰려고 의도한 경우라면 사용가능 <br>
 
 ## call, apply, bind
 
@@ -556,11 +555,7 @@ student(); // Jo이/가 공부를 하고 있습니다.
 ## 이벤트 전파
 
 - 하위태그와 상위태그에 모두 이벤트를 등록했을때 하위태그를 누르면? 원하는 하위태그뿐만 아니라 상위태그에도 이벤트가 시작된다 이를 이벤트 전파라고 한다
-- 이벤트 전파에는 2종류가 있다
-  ![23](https://user-images.githubusercontent.com/110578739/185742700-9f8849b2-fe1b-4456-96c8-df6564728ac4.jpg)
-  다음과 같이 하위태그로부터 시작해서 올라가면 Bubbling
-  상위 태그로부터 내려가면 Capturing
-  주로 쓰는 `addEventListener`는 default로 Bubbling이다  
+- 이벤트 전파에는 2종류가 있다 ![23](https://user-images.githubusercontent.com/110578739/185742700-9f8849b2-fe1b-4456-96c8-df6564728ac4.jpg) 다음과 같이 하위태그로부터 시작해서 올라가면 Bubbling 상위 태그로부터 내려가면 Capturing 주로 쓰는 `addEventListener`는 default로 Bubbling이다  
   <br>
 
 이벤트 전파 막기
@@ -797,9 +792,7 @@ new Promise(function(resolve, reject) {
 });
 ```
 
-`then(...).then(...).then(...)`와 같이 `then()`메소드를 이어가면서 사용할 수 있다
-`then()`은 항상 `promise`객체를 반환한다
-<br>
+`then(...).then(...).then(...)`와 같이 `then()`메소드를 이어가면서 사용할 수 있다 `then()`은 항상 `promise`객체를 반환한다 <br>
 
 ## async
 
@@ -886,8 +879,7 @@ async function logName() {
 }
 ```
 
-- `async, await`를 사용하면 더 직관적이고 간결하게 코드 실행 순서를 정할 수 있다
-  <br>
+- `async, await`를 사용하면 더 직관적이고 간결하게 코드 실행 순서를 정할 수 있다 <br>
 
 ## append()와 appendChild()
 
@@ -973,7 +965,7 @@ console.log(document.body.appendChild(div)); // div(Node object)
 
 ```html
 <div id="testDiv">
-  <div id="childDiv"></div>
+	<div id="childDiv"></div>
 </div>
 ```
 
@@ -1062,3 +1054,32 @@ for (key in a) {
 
 - `a.key`에서 key는 그자체의 이름 변수x
 - `a[key]`에서 key는 변수로 접근 가능
+
+## &&, || 연산자
+
+- && : 왼쪽부터 시작하여 첫번째 falsy 반환 / all truthy라면 마지막 값 반환
+
+```java script
+// 첫 번째 피연산자가 truthy이면,
+// AND는 두 번째 피연산자를 반환합니다.
+alert( 1 && 0 ); // 0
+alert( 1 && 5 ); // 5
+
+// 첫 번째 피연산자가 falsy이면,
+// AND는 첫 번째 피연산자를 반환하고, 두 번째 피연산자는 무시합니다.
+alert( null && 5 ); // null
+alert( 0 && "아무거나 와도 상관없습니다." ); // 0
+```
+
+- || : 왼쪽부터 시작하여 첫번째 truthy 반환 / all falsy라면 마지막 값 반환
+
+```java script
+alert( 1 || 0 ); // 1 (1은 truthy임)
+
+alert( null || 1 ); // 1 (1은 truthy임)
+alert( null || 0 || 1 ); // 1 (1은 truthy임)
+
+alert( undefined || null || 0 ); // 0 (모두 falsy이므로, 마지막 값을 반환함)
+```
+
+출처 : https://ko.javascript.info/logical-operators
