@@ -33,7 +33,10 @@
   - [set과 map 자료구조](#set과-map-자료구조)
     - [set](#set)
     - [map](#map)
-  - [iterator와-iterable](#iterator와-iterable)
+  - [iterable와 iterator](#iterable와-iterator)
+    - [iterable](#iterable)
+    - [iterator](#iterator)
+    - [well-formed iterator](#well-formed-iterator)
   - [generator-이해하기](#generator-이해하기)
 
 ## 콜 스택
@@ -1257,9 +1260,69 @@ for (const entry of map.entries()) {
 }
 ```
 
-## iterator와-iterable
+## iterable와 iterator
 
-출처 : https://armadillo-dev.github.io/javascript/what-is-iterable-and-iterator/  
-<br>
+### iterable
+
+- 반복 가능한 객체(set, map, array, string 등)
+  - `for of, spread, destructuring`과 같은 반복문을 사용할 수 있다
+- `[Symbol.iterator]` 메소드가 존재해야한다
+- `[Symbol.iterator]` 메소드는 `iterator`객체를 반환 해야한다
+
+```java script
+const iterable = {
+  [Symbol.iterator]() {
+    return someIteratorObject
+  }
+  ...
+}
+```
+
+### iterator
+
+- 객체에 `next` 메소드가 존재해야한다
+- `next` 메소드는 `iterator result` 객체를 반환해야한다
+- `iterator result`객체는 `value`와 `done`프로퍼티를 갖는다
+  - `value`는 반복의 현재 값
+  - `done`은 반복이 끝났는지를 나타내는 boolean 값
+- 이전 `next`메소드가 반환한 `iterator result`객체의 `done`프로퍼티가 `true`이면 `next`메소드의 반환 값의 `done`프로퍼티는 `true`여야한다
+
+```java script
+const iterable = {
+  [Symbol.iterator]() {
+    let i = 0
+    // iterator 객체
+    return {
+      next() {
+        while(i < 10) { // i가 10이 될 때까지 반복기 수행
+          return { value: i++, done: false }
+        }
+        return { done: true } // i 가 10이 되면 반복 종료(value 값 생략 가능)
+      }
+    }
+  }
+}
+```
+
+### well-formed iterator
+
+- `iterable`이면서 `iterator`인 객체
+
+```java script
+const wellFormedIterator = { // Iterator 객체
+  next() {
+    return someIteratorResultObject
+  }
+
+  // Iterator 객체에 Symbol.iterator 메서드가 존재하며,
+  // 해당 메서드가 자기 자신(iterator)을 반환한다.
+  [Symbol.iterator]() {
+    return this
+  }
+  ...
+}
+```
+
+출처 : https://armadillo-dev.github.io/javascript/what-is-iterable-and-iterator/ <br>
 
 ## generator-이해하기
