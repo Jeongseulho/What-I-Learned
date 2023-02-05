@@ -30,6 +30,11 @@
   - [객체 문법](#객체-문법)
   - [Object\[key\] vs Object.key](#objectkey-vs-objectkey)
   - [\&\&, || 연산자](#--연산자)
+  - [set과-map-자료구조](#set과-map-자료구조)
+    - [set](#set)
+    - [map](#map)
+  - [iterator와-iterable](#iterator와-iterable)
+  - [generator-이해하기](#generator-이해하기)
 
 ## 콜 스택
 
@@ -310,21 +315,21 @@ count();
 <div id="progress"></div>
 
 <script>
-	let i = 0;
+  let i = 0;
 
-	function count() {
-		// do a piece of the heavy job (*)
-		do {
-			i++;
-			progress.innerHTML = i;
-		} while (i % 1e3 != 0);
+  function count() {
+    // do a piece of the heavy job (*)
+    do {
+      i++;
+      progress.innerHTML = i;
+    } while (i % 1e3 != 0);
 
-		if (i < 1e9) {
-			setTimeout(count);
-		}
-	}
+    if (i < 1e9) {
+      setTimeout(count);
+    }
+  }
 
-	count();
+  count();
 </script>
 ```
 
@@ -965,7 +970,7 @@ console.log(document.body.appendChild(div)); // div(Node object)
 
 ```html
 <div id="testDiv">
-	<div id="childDiv"></div>
+  <div id="childDiv"></div>
 </div>
 ```
 
@@ -1082,4 +1087,102 @@ alert( null || 0 || 1 ); // 1 (1은 truthy임)
 alert( undefined || null || 0 ); // 0 (모두 falsy이므로, 마지막 값을 반환함)
 ```
 
-출처 : https://ko.javascript.info/logical-operators
+출처 : https://ko.javascript.info/logical-operators  
+<br>
+
+## set과-map-자료구조
+
+### set
+
+- 생성 방법
+
+```java script
+const set = new Set();
+console.log(set); // Set(0) {}
+
+const set1 = new Set([1, 2, 3, 3]);
+console.log(set1); // Set(3) {1, 2, 3}
+
+const set2 = new Set('hello');
+console.log(set2); // Set(4) {"h", "e", "l", "o"}
+```
+
+- 중복된 값을 허용하지 않음
+
+```java script
+// Set을 사용한 배열의 중복 요소 제거
+const uniq = array => [...new Set(array)];
+console.log(uniq([2, 1, 2, 3, 4, 3, 4])); // [2, 1, 3, 4]
+```
+
+- 수학의 집합과 동일(차집합, 교집합, 합집합, 부분집합 메소드 제공)
+
+```java script
+const setA = new Set([1, 2, 3, 4]);
+const setB = new Set([2, 4]);
+
+// setA와 setB의 교집합
+console.log(setA.intersection(setB)); // Set(2) {2, 4}
+// setB와 setA의 교집합
+console.log(setB.intersection(setA)); // Set(2) {2, 4}
+
+// setA와 setB의 합집합
+console.log(setA.union(setB)); // Set(4) {1, 2, 3, 4}
+// setB와 setA의 합집합
+console.log(setB.union(setA)); // Set(4) {2, 4, 1, 3}
+
+// setA에 대한 setB의 차집합
+console.log(setA.difference(setB)); // Set(2) {1, 3}
+// setB에 대한 setA의 차집합
+console.log(setB.difference(setA)); // Set(0) {}
+
+// setA가 setB의 상위 집합인지 확인한다.
+console.log(setA.isSuperset(setB)); // true
+// setB가 setA의 상위 집합인지 확인한다.
+console.log(setB.isSuperset(setA)); // false
+```
+
+- 순서가 없음(인덱스로 접근 불가), 순회가능
+
+```java script
+const set = new Set([1, 2, 3]);
+
+// Set 객체는 Set.prototype의 Symbol.iterator 메서드를 상속받는 이터러블이다.
+console.log(Symbol.iterator in set); // true
+
+// 이터러블인 Set 객체는 for...of 문으로 순회할 수 있다.
+for (const value of set) {
+  console.log(value); // 1 2 3
+}
+
+// 이터러블인 Set 객체는 forEach 메서드를 갖는다.
+// v : 요소값, v2 : 요소값, set : Set 객체 자신
+set.forEach((v, v2, set) => console.log(v, v2, set));
+/*
+1 1 Set(3) {1, 2, 3}
+2 2 Set(3) {1, 2, 3}
+3 3 Set(3) {1, 2, 3}
+*/
+
+// 이터러블인 Set 객체는 스프레드 문법의 대상이 될 수 있다.
+console.log([...set]); // [1, 2, 3]
+
+// 이터러블인 Set 객체는 배열 디스트럭처링 할당의 대상이 될 수 있다.
+const [a, ...rest] = [...set];
+console.log(a, rest); // 1, [2, 3]
+```
+
+### map
+
+map은 object와 비슷한 key-value 구조를 가지고 있음
+
+- obejct는 key가 string이어야 하지만 map은 key가 string이 아니어도 됨
+- object는 이터러블이 아니지만 map은 이터러블
+- 데이터 순서를 유지, 순회 가능
+
+## iterator와-iterable
+
+출처 : https://armadillo-dev.github.io/javascript/what-is-iterable-and-iterator/  
+<br>
+
+## generator-이해하기
