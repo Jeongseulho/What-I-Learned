@@ -37,7 +37,7 @@
     - [iterable](#iterable)
     - [iterator](#iterator)
     - [well-formed iterator](#well-formed-iterator)
-  - [generator-이해하기](#generator-이해하기)
+  - [generator 함수 이해하기](#generator-함수-이해하기)
 
 ## 콜 스택
 
@@ -1325,4 +1325,125 @@ const wellFormedIterator = { // Iterator 객체
 
 출처 : https://armadillo-dev.github.io/javascript/what-is-iterable-and-iterator/ <br>
 
-## generator-이해하기
+## generator 함수 이해하기
+
+- `well-formed iterator`로 평가되는 `generator 객체`를 반환하는 함수
+- `function` 키워드 뒤에 `*`를 붙여서 선언한다
+- yield
+  - 반환된 `generator 객체`의 `next`메소드를 호출할 때마다 `yield`표현식까지 실행된다
+
+```java script
+function* someGeneratorFunction() {
+  console.log('1번 실행')
+  yield 1
+  console.log('2번 실행')
+  yield 2
+  console.log('3번 실행')
+  yield 3
+}
+
+const iter = someGeneratorFunction()
+
+iter.next() // 1번 실행, { value: 1, done: false }
+
+for (num of iter) console.log(num) // 2번 실행, 2, 3번 실행, 3
+```
+
+- yield\*
+  - `yield*`표현식은 다른 `generator 함수`를 호출하고, 그 결과를 반환한다
+  - 중첩된 `generator 함수`를 호출할 때 유용하다
+
+```java script
+function* someGeneratorFunction() {
+  const iter = otherGeneratorFunction()
+  yield 0
+  yield* iter
+}
+
+function* otherGeneratorFunction() {
+  yield 1
+  yield 2
+}
+
+const gen = someGeneratorFunction()
+gen.next() // { value: 0, done: false }
+gen.next() // { value: 1, done: false }
+gen.next() // { value: 2, done: false }, 여기서는 아직 done이 아니다
+gen.next() // { value: undefined, done: true }, 여기서 done이된다
+```
+
+- return
+  - `next`메소드로 `return`차례가 되면 `return`표현식의 결과를 반환한다
+  - `done`프로퍼티는 `true`가 되므로 더이상 진행되지 않는다
+  - `for of`문에서는 `return`표현식 전까지만 실행된다
+
+```java script
+function* gen() {
+  yield 1
+  return 2
+  yield 3
+}
+
+const iter = gen()
+iter.next() // { value: 1, done: false }
+iter.next() // { value: 2, done: true }
+iter.next() // { value: undefined, done: true }
+
+const iter2 = gen()
+for (let num of iter2) console.log(num) // 1 <-- 2는 출력되지 않는다.
+```
+
+- throw
+  - `next`메소드로 `throw`차례가 되면 에러가 발생한다
+
+```java script
+function* gen() {
+  yield 1
+  throw '에러 발생!!'
+  yield 3
+}
+
+const iter = gen()
+iter.next() // { value: 1, done: false }
+iter.next() // Uncaught 에러 발생!!
+iter.next() // { value: undefined, done: true }
+```
+
+- `generator함수` 안/밖 정보 주고받기
+
+```java script
+function* gen() {
+  // 질문을 제너레이터 밖 코드에 던지고 답을 기다립니다.
+  let result = yield "2 + 2 = ?"; // (*)
+
+  alert(result);
+}
+
+let generator = gen();
+
+let question = generator.next().value; // <-- yield는 value를 반환합니다.
+
+generator.next(4); // --> 결과를 제너레이터 안으로 전달합니다.
+// 이후 alert(4)가 실행됩니다.
+
+```
+
+```java script
+function* gen() {
+  try {
+    let result = yield "2 + 2 = ?"; // 질문을 밖으로 던집니다.
+
+    alert("위에서 에러가 던져졌기 때문에 실행 흐름은 여기까지 다다르지 못합니다.");
+  } catch(e) {
+    alert(e); // 에러 출력
+  }
+}
+
+let generator = gen();
+
+let question = generator.next().value; // 질문을 받습니다.
+
+generator.throw(new Error("데이터베이스에서 답을 찾지 못했습니다.")); // 에러를 제너레이터 안으로 던집니다.
+```
+
+출처 : https://armadillo-dev.github.io/javascript/what-is-generator/
