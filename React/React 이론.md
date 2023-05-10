@@ -260,7 +260,7 @@ useEffect(() => {
 },[location]);
 ```
 
-`useEffect`를 사용해서 객체타입인 변수 `location`이 변할때만 실행시키고 싶은데 여기서 `setNumber()`를 사용하면 해당 `console.log("useEffect호출)`이 실행된다
+`useEffect`를 사용해서 객체타입인 변수 `location`이 변할때만 실행시키고 싶은데 여기서 `setNumber()`를 사용하면 해당 `console.log("useEffect호출")`이 실행된다
 
 - 이유는 원시타입변수(string, number, boolean 등)와 다르게 객체타입변수(object, array 등)은 변수에 값이아닌 참조할 주소가 담긴다
 - `setNumber`를 통해 리렌더링을 할 때 마다 `location`은 다시 선언 되며, 이때마다 객체의 값은 그대로지만 사실상 `location`변수 자체에 담긴 주소 참조값은 매번 달라지므로 `useEffect`에서 다르다고 판단한다
@@ -277,7 +277,7 @@ useEffect(() => {
 },[location]);
 ```
 
-다음과 같이 `useMemo`를 사용해서 변수에 객체를 담으면 `setNumber()`를 사용해도 `console.log("useEffect호출)`이 실행되지 않는 의도하는 상황을 만든다  
+다음과 같이 `useMemo`를 사용해서 변수에 객체를 담으면 `setNumber()`를 사용해도 `console.log("useEffect호출")`이 실행되지 않는 의도하는 상황을 만든다  
 <br>
 
 ```java script
