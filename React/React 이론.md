@@ -139,7 +139,7 @@ return(
 ```java script
 useEffect(() => {
   (마운트시 수행 작업 + 의존성 바뀔때마다 수행 작업);
-  return {
+  return () => {
       (언마운트시 수행 작업); // clean up 함수
   }
 }, [의존성])
